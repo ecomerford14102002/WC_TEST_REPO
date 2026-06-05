@@ -1,0 +1,407 @@
+/* ============================================================================
+   PREDICTION HISTORY MODAL - COMPLETE STYLING
+   ============================================================================ */
+
+/* Modal Backdrop */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.3s ease-in;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes modalFadeIn {
+    from { 
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modal Content Container */
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(134, 188, 37, 0.1);
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 2px solid rgba(134, 188, 37, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    border-bottom: 2px solid rgba(134, 188, 37, 0.2);
+    background: linear-gradient(90deg, rgba(134, 188, 37, 0.1) 0%, rgba(134, 188, 37, 0.05) 100%);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #86BC25;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-header h2 i {
+    font-size: 1.6rem;
+}
+
+/* Modal Close Button */
+.modal-close {
+    background: rgba(134, 188, 37, 0.1);
+    border: 1px solid rgba(134, 188, 37, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.modal-close:hover {
+    color: #86BC25;
+    background: rgba(134, 188, 37, 0.2);
+    border-color: rgba(134, 188, 37, 0.5);
+    transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(134, 188, 37, 0.05);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(134, 188, 37, 0.3);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(134, 188, 37, 0.5);
+}
+
+/* History List Container */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* History Item Card */
+.history-item {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(134, 188, 37, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    animation: slideInUp 0.4s ease;
+}
+
+.history-item:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+    border-color: rgba(134, 188, 37, 0.4);
+    box-shadow: 0 8px 24px rgba(134, 188, 37, 0.1);
+    transform: translateY(-2px);
+}
+
+.history-item.correct-prediction {
+    border-color: #86BC25;
+    background: linear-gradient(135deg, rgba(134, 188, 37, 0.15) 0%, rgba(134, 188, 37, 0.08) 100%);
+    box-shadow: 0 0 20px rgba(134, 188, 37, 0.15);
+}
+
+.history-item.correct-prediction:hover {
+    box-shadow: 0 8px 24px rgba(134, 188, 37, 0.25);
+}
+
+/* Match Information Section */
+.history-match {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(134, 188, 37, 0.1);
+}
+
+.history-teams {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    flex-wrap: wrap;
+}
+
+.history-teams .team-name {
+    flex: 1;
+    color: #86BC25;
+    font-weight: 700;
+    text-align: center;
+    min-width: 100px;
+}
+
+.history-teams .vs {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    background: rgba(134, 188, 37, 0.1);
+    border-radius: 4px;
+    flex: 0;
+}
+
+.history-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Score Display Grid */
+.history-scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.score-column {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(134, 188, 37, 0.1);
+    transition: all 0.3s ease;
+}
+
+.score-column:hover {
+    border-color: rgba(134, 188, 37, 0.3);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.score-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-value {
+    color: #86BC25;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+.points-positive {
+    color: #10b981 !important;
+    font-weight: 800;
+}
+
+.points-zero {
+    color: #ef4444 !important;
+    font-weight: 800;
+}
+
+/* Empty State */
+.modal-body > div[style*="text-align: center"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 20px;
+}
+
+.modal-body > div[style*="text-align: center"] i {
+    font-size: 4rem;
+    color: rgba(134, 188, 37, 0.3);
+}
+
+.modal-body > div[style*="text-align: center"] p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Error State */
+.modal-body > div[style*="text-align: center"] i[class*="exclamation"] {
+    color: #ef4444;
+    font-size: 3rem;
+}
+
+.modal-body > div[style*="text-align: center"] p[style*="color: #EF4444"] {
+    color: #ef4444 !important;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+/* Button Styling */
+.btn.btn-primary {
+    background: linear-gradient(135deg, #86BC25 0%, #6fa01f 100%);
+    color: #1a1a2e;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn.btn-primary:hover {
+    background: linear-gradient(135deg, #9dd43d 0%, #86BC25 100%);
+    box-shadow: 0 8px 20px rgba(134, 188, 37, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 98%;
+        max-height: 90vh;
+        border-radius: 12px;
+    }
+    
+    .modal-header {
+        padding: 20px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .history-scores {
+        grid-template-columns: 1fr;
+    }
+    
+    .history-teams {
+        flex-direction: column;
+        gap: 5px;
+        font-size: 1rem;
+    }
+    
+    .team-name {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .modal-header {
+        padding: 16px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .modal-body {
+        padding: 16px;
+    }
+    
+    .history-item {
+        padding: 12px;
+    }
+    
+    .history-teams {
+        font-size: 0.95rem;
+    }
+    
+    .history-scores {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .score-column {
+        padding: 12px;
+    }
+    
+    .score-label {
+        font-size: 0.7rem;
+    }
+    
+    .score-value {
+        font-size: 1rem;
+    }
+}

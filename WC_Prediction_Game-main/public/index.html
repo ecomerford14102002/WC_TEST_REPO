@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- API Service Layer (MUST BE FIRST) -->
+    <script src="src/js/api.js"></script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Cup Prediction Game - Deloitte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/animations.css">
+    <link rel="stylesheet" href="src/css/predictions.css">
+    <link rel="stylesheet" href="src/css/adminstyle.css">
+    <link rel="stylesheet" href="src/css/hype-timer.css">
+    <link rel="stylesheet" href="src/css/history_modal.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+    </div>
+
+    <!-- History Modal (Global) -->
+    <div class="history-modal" id="historyModal">
+        <div class="history-content">
+            <div class="history-header">
+                <h2 class="history-title">
+                    <i class="fas fa-history"></i> My Prediction History
+                </h2>
+                <button class="close-modal" onclick="closeHistory()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="historyItems"></div>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app"></div>
+
+    <!-- Scripts (CORRECT ORDER) -->
+    <!-- API must be loaded first -->
+    <!-- (api.js already loaded in head) -->
+    
+    <!-- Utilities -->
+    <script src="src/js/utils/helpers.js"></script>
+    <script src="src/js/utils/navigation.js"></script>    <!-- Page Generators -->
+    <script src="src/js/pages/login.js"></script>
+    <script src="src/js/pages/signup.js"></script>
+    <!-- ✅ REMOVED: verification.js - no longer needed -->
+    <script src="src/js/pages/allocation.js"></script>
+    <script src="src/js/pages/hype-timer.js"></script>
+    <script src="src/js/pages/home.js"></script>
+    <script src="src/js/pages/admin.js"></script>
+    <script src="src/js/pages/predictions.js"></script>
+    <script src="src/js/pages/tournamentwinner.js"></script>
+    <script src="src/js/pages/goldenboot.js"></script>
+    <script src="src/js/pages/goldenglove.js"></script>
+    
+    <!-- Main App -->
+    <script src="src/js/main.js"></script>
+</body>
+</html>

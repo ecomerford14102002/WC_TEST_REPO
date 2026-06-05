@@ -1,0 +1,461 @@
+/* Admin Section Styles */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #0D1F2D 0%, #1a3a4a 100%);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(134, 188, 37, 0.2);
+}
+
+.admin-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.admin-title i {
+    font-size: 2rem;
+    color: #86BC25;
+}
+
+.admin-title h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 2rem;
+}
+
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #86BC25, #a8d63f);
+    color: #0D1F2D;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Admin Tabs */
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(134, 188, 37, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(134, 188, 37, 0.1);
+    border-color: #86BC25;
+    color: #86BC25;
+}
+
+.admin-tab-btn.active {
+    background: linear-gradient(135deg, #86BC25, #a8d63f);
+    border-color: #86BC25;
+    color: #0D1F2D;
+}
+
+/* Admin Tab Content */
+.admin-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.admin-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Admin Card */
+.admin-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(134, 188, 37, 0.2);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.admin-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px 0;
+    color: #fff;
+    font-size: 1.5rem;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(134, 188, 37, 0.2);
+}
+
+.admin-card h2 i {
+    color: #86BC25;
+}
+
+.admin-card h3 {
+    color: #fff;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(134, 188, 37, 0.2);
+}
+
+.admin-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 20px 0;
+    font-size: 0.95rem;
+}
+
+/* Forms */
+.match-entry-form {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    padding: 12px 15px;
+    background: #3a3a3a;
+    border: 1px solid rgba(134, 188, 37, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    background: #3a3a3a;
+    border-color: #86BC25;
+    box-shadow: 0 0 10px rgba(134, 188, 37, 0.2);
+}
+
+.form-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Search Box */
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box .form-input {
+    width: 100%;
+}
+
+/* Filter Box */
+.filter-box {
+    margin-bottom: 20px;
+}
+
+/* Tables */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #86BC25;
+}
+
+.admin-table thead {
+    background: rgba(134, 188, 37, 0.1);
+    border-bottom: 3px solid #86BC25;
+}
+
+.admin-table th {
+    padding: 20px 25px;
+    text-align: left;
+    color: #86BC25;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 3px solid #86BC25 !important;
+}
+
+.admin-table th:last-child {
+    border-right: none !important;
+}
+
+.admin-table td {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(134, 188, 37, 0.2);
+    border-right: 3px solid #86BC25 !important;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.admin-table td:last-child {
+    border-right: none !important;
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid rgba(134, 188, 37, 0.2);
+}
+
+.admin-table tbody tr {
+    margin-bottom: 10px;
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(134, 188, 37, 0.05);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.completed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+/* Score Badge */
+.score-badge {
+    background: rgba(134, 188, 37, 0.2);
+    color: #86BC25;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Points Badge */
+.points-badge {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.points-badge.correct {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+/* Badge Type */
+.badge-type {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-type.tournament {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.badge-type.boot {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+.badge-type.glove {
+    background: rgba(236, 72, 153, 0.2);
+    color: #ec4899;
+}
+
+.badge-type.match {
+    background: rgba(134, 188, 37, 0.2);
+    color: #86BC25;
+}
+
+/* Buttons */
+.btn-small {
+    padding: 6px 12px;
+    background: rgba(134, 188, 37, 0.2);
+    border: 1px solid rgba(134, 188, 37, 0.4);
+    color: #86BC25;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-small:hover {
+    background: rgba(134, 188, 37, 0.3);
+    border-color: #86BC25;
+}
+
+/* Leaderboard Actions */
+.leaderboard-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.leaderboard-actions .btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Info Cards */
+.leaderboard-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: rgba(134, 188, 37, 0.1);
+    border: 1px solid rgba(134, 188, 37, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.info-card h4 {
+    margin: 0 0 10px 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-card p {
+    margin: 0;
+    color: #86BC25;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Matches Table Container */
+.matches-table-container {
+    margin-top: 30px;
+}
+
+/* Access Denied */
+.admin-access-denied {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.access-denied-content {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(134, 188, 37, 0.2);
+    padding: 50px;
+    border-radius: 15px;
+    max-width: 500px;
+}
+
+.access-denied-content h2 {
+    color: #fff;
+    margin: 20px 0 10px 0;
+}
+
+.access-denied-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 10px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+    }
+
+    .admin-tab-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-table {
+        font-size: 0.85rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+    padding: 20px 40px;
+}
+
+    .leaderboard-info {
+        grid-template-columns: 1fr 1fr;
+    }
+}
