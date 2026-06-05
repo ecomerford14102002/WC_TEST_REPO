@@ -1,12 +1,13 @@
-// api.js - UPDATED WITH ADMIN FUNCTIONS
-// API Service for communicating with Flask backend
+// api.js - UPDATED FOR AWS API GATEWAY
+// API Service for communicating with AWS Lambda backend via API Gateway
 // Includes functions for match fetching, prediction submission, user prediction retrieval, and prediction history
 
 const API_BASE_URL = (() => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return 'http://localhost:5000/api';
+        return 'http://localhost:5000';
     } else {
-        return `${window.location.protocol}//${window.location.host}/api`;
+        // Use your API Gateway URL for production
+        return 'https://2cbqd4lkzf.execute-api.eu-west-1.amazonaws.com/prod';
     }
 })();
 
@@ -17,6 +18,7 @@ const API_BASE_URL = (() => {
  */
 async function registerUser(userData) {
     try {
+        console.log('Calling registerUser with:', userData);
         const response = await fetch(`${API_BASE_URL}/register`, {
             method: 'POST',
             headers: {
@@ -170,7 +172,7 @@ async function fetchUserPredictions(userId) {
     try {
         console.log('[API] Fetching predictions for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/user-predictions/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/user_predictions?user_id=${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -200,7 +202,7 @@ async function fetchPredictionHistory(userId) {
     try {
         console.log('[API] Fetching prediction history for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/prediction-history/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/prediction_history?user_id=${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -244,7 +246,7 @@ async function submitPrediction(userId, matchId, predictedHomeScore, predictedAw
             throw new Error('User not authenticated');
         }
 
-        const response = await fetch(`${API_BASE_URL}/predict`, {
+        const response = await fetch(`${API_BASE_URL}/score_prediction`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -419,7 +421,7 @@ async function submitAdminScore(scoreData) {
     try {
         console.log('[API] Submitting admin score:', scoreData);
         
-        const response = await fetch(`${API_BASE_URL}/admin/enter-score`, {
+        const response = await fetch(`${API_BASE_URL}/admin_score_entry`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -449,7 +451,7 @@ async function fetchAllUsers() {
     try {
         console.log('[API] Fetching all users');
         
-        const response = await fetch(`${API_BASE_URL}/admin/users`, {
+        const response = await fetch(`${API_BASE_URL}/admin_users`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -478,7 +480,7 @@ async function fetchAllPredictions() {
     try {
         console.log('[API] Fetching all predictions');
         
-        const response = await fetch(`${API_BASE_URL}/admin/predictions`, {
+        const response = await fetch(`${API_BASE_URL}/admin_predictions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -507,7 +509,7 @@ async function fetchAdminLeaderboard() {
     try {
         console.log('[API] Fetching admin leaderboard');
         
-        const response = await fetch(`${API_BASE_URL}/admin/leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/admin_leaderboard`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
