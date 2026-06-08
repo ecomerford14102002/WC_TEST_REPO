@@ -643,3 +643,42 @@ async function submitGoldenGlovePrediction(userId, jwtToken, goalkeeperName) {
         throw error;
     }
 }
+
+/**
+ * Submit tournament winner prediction
+ * @param {number} userId - User ID
+ * @param {string} jwtToken - JWT token
+ * @param {string} country - Country name for tournament winner
+ * @returns {Promise} Response from server
+ */
+async function submitTournamentWinnerPrediction(userId, jwtToken, country) {
+    try {
+        console.log('[API] Submitting tournament winner prediction:', country);
+        
+        const response = await fetch(`${API_BASE_URL}/tournament_winner`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({
+                action: 'predict_tournament_winner',
+                user_id: userId,
+                jwt_token: jwtToken,
+                country: country
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to submit tournament winner prediction');
+        }
+
+        console.log('[API] Tournament winner prediction response:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Tournament winner prediction error:', error);
+        throw error;
+    }
+}
