@@ -224,6 +224,42 @@ async function fetchPredictionHistory(userId) {
 }
 
 /**
+ * Fetch paginated user prediction history
+ * @param {number} userId - User ID
+ * @param {number} page - Page number (default 1)
+ * @param {number} limit - Number of items per page (default 20)
+ * @returns {Promise} Paginated prediction history data
+ */
+async function fetchPaginatedPredictionHistory(userId, page = 1, limit = 20) {
+    try {
+        console.log('[API] Fetching paginated prediction history for user:', userId, 'page:', page);
+        
+        const jwtToken = getJWTToken();
+        
+        if (!jwtToken) {
+            throw new Error('User not authenticated');
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/prediction-history/${userId}?page=${page}&limit=${limit}`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || `HTTP ${response.status}`);
+        }
+
+        console.log('[API] Paginated prediction history fetched successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Fetch paginated prediction history error:', error);
+        throw error;
+    }
+}
+
+/**
  * Submit a score prediction for a match
  * @param {number} userId - User ID
  * @param {string} matchId - Match ID
