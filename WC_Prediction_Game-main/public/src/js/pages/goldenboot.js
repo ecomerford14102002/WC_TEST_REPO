@@ -76,27 +76,9 @@ async function submitGoldenBoot(button) {
             jwtToken: jwtToken ? 'present' : 'missing'
         });
 
-        // Call Lambda to save prediction
-        const response = await fetch('/api/team-assignment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            },
-            body: JSON.stringify({
-                action: 'predict_golden_boot',
-                user_id: parseInt(userId),
-                jwt_token: jwtToken,
-                player_name: playerName
-            })
-        });
-
-        const data = await response.json();
+        // Call API function to save prediction
+        const data = await submitGoldenBootPrediction(userId, jwtToken, playerName);
         console.log('Golden boot prediction response:', data);
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Prediction save failed');
-        }
 
         // Save to localStorage
         const predictions = JSON.parse(localStorage.getItem('predictions') || '{}');
@@ -137,7 +119,6 @@ async function submitGoldenBoot(button) {
         alert(`Error saving prediction: ${error.message}`);
     }
 }
-
 // Update character counter
 document.addEventListener('DOMContentLoaded', function() {
     const bootInput = document.getElementById('golden-boot');
