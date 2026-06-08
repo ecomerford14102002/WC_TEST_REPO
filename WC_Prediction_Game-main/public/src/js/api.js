@@ -528,6 +528,7 @@ async function fetchAdminLeaderboard() {
         console.error('[API] Fetch leaderboard error:', error);
         throw error;
     }
+}
 
 async function assignTeamToUser(userId, jwtToken) {
     try {
