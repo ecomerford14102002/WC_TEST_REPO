@@ -565,3 +565,81 @@ async function assignTeamToUser(userId, jwtToken) {
         throw error;
     }
 }
+
+/**
+ * Submit golden boot prediction
+ * @param {number} userId - User ID
+ * @param {string} jwtToken - JWT token
+ * @param {string} playerName - Player name for golden boot
+ * @returns {Promise} Response from server
+ */
+async function submitGoldenBootPrediction(userId, jwtToken, playerName) {
+    try {
+        console.log('[API] Submitting golden boot prediction:', playerName);
+        
+        const response = await fetch(`${API_BASE_URL}/golden_boot`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({
+                action: 'predict_golden_boot',
+                user_id: userId,
+                jwt_token: jwtToken,
+                player_name: playerName
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to submit golden boot prediction');
+        }
+
+        console.log('[API] Golden boot prediction response:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Golden boot prediction error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Submit golden glove prediction
+ * @param {number} userId - User ID
+ * @param {string} jwtToken - JWT token
+ * @param {string} goalkeeperName - Goalkeeper name for golden glove
+ * @returns {Promise} Response from server
+ */
+async function submitGoldenGlovePrediction(userId, jwtToken, goalkeeperName) {
+    try {
+        console.log('[API] Submitting golden glove prediction:', goalkeeperName);
+        
+        const response = await fetch(`${API_BASE_URL}/golden_glove`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({
+                action: 'predict_golden_glove',
+                user_id: userId,
+                jwt_token: jwtToken,
+                player_name: goalkeeperName
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to submit golden glove prediction');
+        }
+
+        console.log('[API] Golden glove prediction response:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Golden glove prediction error:', error);
+        throw error;
+    }
+}
