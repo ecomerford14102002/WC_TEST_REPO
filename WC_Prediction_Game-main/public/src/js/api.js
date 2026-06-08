@@ -7,7 +7,7 @@ const API_BASE_URL = (() => {
         return 'http://localhost:5000';
     } else {
         // Use your API Gateway URL for production
-        return 'https://2cbqd4lkzf.execute-api.eu-west-1.amazonaws.com/prod';
+        return 'https://fvw5hp0zo5.execute-api.eu-west-1.amazonaws.com/prod';
     }
 })();
 
