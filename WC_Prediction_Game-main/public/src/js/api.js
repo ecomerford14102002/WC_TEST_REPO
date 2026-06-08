@@ -581,7 +581,6 @@ async function submitGoldenBootPrediction(userId, jwtToken, playerName) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
             },
             body: JSON.stringify({
                 action: 'predict_golden_boot',
@@ -620,7 +619,6 @@ async function submitGoldenGlovePrediction(userId, jwtToken, goalkeeperName) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
             },
             body: JSON.stringify({
                 action: 'predict_golden_glove',
@@ -659,7 +657,6 @@ async function submitTournamentWinnerPrediction(userId, jwtToken, country) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
             },
             body: JSON.stringify({
                 action: 'predict_tournament_winner',
