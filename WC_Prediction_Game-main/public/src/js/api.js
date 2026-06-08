@@ -565,4 +565,3 @@ async function assignTeamToUser(userId, jwtToken) {
         throw error;
     }
 }
-}
