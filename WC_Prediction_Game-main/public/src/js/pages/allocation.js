@@ -29,20 +29,10 @@ async function assignTeamOnLoad() {
         
         console.log('Assigning team for user:', userId);
         
-        // Call Flask endpoint to assign team
-        const response = await fetch('/api/team-assignment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'assign_team',
-                user_id: parseInt(userId),
-                jwt_token: jwtToken
-            })
-        });
+        console.log('Assigning team for user:', userId);
         
-        const data = await response.json();
+        // Call API function to assign team
+        const data = await assignTeamToUser(parseInt(userId), jwtToken);
         console.log('Team assignment response:', data);
         
         if (data.status === 'success') {
