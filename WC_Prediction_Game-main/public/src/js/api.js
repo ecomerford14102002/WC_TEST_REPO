@@ -528,4 +528,34 @@ async function fetchAdminLeaderboard() {
         console.error('[API] Fetch leaderboard error:', error);
         throw error;
     }
+
+async function assignTeamToUser(userId, jwtToken) {
+    try {
+        console.log('[API] Assigning team for user:', userId);
+        
+        const response = await fetch(`${API_BASE_URL}/team_assignment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'assign_team',
+                user_id: userId,
+                jwt_token: jwtToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to assign team');
+        }
+
+        console.log('[API] Team assignment response:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Team assignment error:', error);
+        throw error;
+    }
+}
 }
