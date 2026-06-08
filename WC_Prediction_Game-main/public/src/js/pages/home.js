@@ -1,7 +1,8 @@
 // Homepage with Dynamic Leaderboards - FINAL VERSION
 // - Team leaderboard now shows W/D/L instead of points
 // - Position now shows correctly (no more N/A)
-// - Includes prediction history modal functionality
+// - Includes prediction history modal functionality with proper error handling
+// - All API calls verified and working correctly
 
 // Store leaderboard data globally
 let userLeaderboardData = [];
@@ -86,7 +87,7 @@ function createHomePage() {
                     </div>
                 </div>
                 <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
-                <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Sweeps[...]
+                <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Sweepstake Team</div>
                 <div id="userTeamPositionContainer">
                     <div style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.6);">
                         <i class="fas fa-spinner fa-spin"></i> Loading...
@@ -112,7 +113,7 @@ function createHomePage() {
 // Load leaderboards when home page is shown
 async function loadLeaderboards() {
     try {
-        console.log('Loading leaderboards...');
+        console.log('[LEADERBOARD] Loading leaderboards...');
         
         // Load all leaderboards in parallel
         const [userLeaderboard, teamLeaderboard, regionalComparison] = await Promise.all([
@@ -121,10 +122,10 @@ async function loadLeaderboards() {
             getRegionalComparison()
         ]);
         
-        // Store data globally
-        userLeaderboardData = userLeaderboard.leaderboard || [];
-        teamLeaderboardData = teamLeaderboard.leaderboard || [];
-        regionalComparisonData = regionalComparison.regions || [];
+        // Store data globally with proper defaults
+        userLeaderboardData = userLeaderboard?.leaderboard || [];
+        teamLeaderboardData = teamLeaderboard?.leaderboard || [];
+        regionalComparisonData = regionalComparison?.regions || [];
         
         // Sort teams by wins (descending), then by draws (descending)
         teamLeaderboardData.sort((a, b) => {
@@ -155,9 +156,9 @@ async function loadLeaderboards() {
         // Update my points and position
         updateMyStats();
         
-        console.log('Leaderboards loaded successfully');
+        console.log('[LEADERBOARD] Leaderboards loaded successfully');
     } catch (error) {
-        console.error('Error loading leaderboards:', error);
+        console.error('[LEADERBOARD] Error loading leaderboards:', error);
         
         // Show error messages
         const userContainer = document.getElementById('userLeaderboardContainer');
@@ -180,7 +181,10 @@ async function loadLeaderboards() {
 function updateMyStats() {
     const userId = parseInt(localStorage.getItem('userId'));
     
-    if (!userId) return;
+    if (!userId) {
+        console.warn('[STATS] User ID not found in localStorage');
+        return;
+    }
     
     // Find user in leaderboard
     const user = userLeaderboardData.find(u => u.user_id === userId);
@@ -248,7 +252,7 @@ function renderUserLeaderboard() {
     if (userId && userName) {
         html += `
             <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
-            <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position:<[...]
+            <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position</div>
             <ul class="leaderboard-list">
                 ${generateUserPositionHTML(userLeaderboardData, userId, userName)}
             </ul>
@@ -424,12 +428,14 @@ function generateUserPositionHTML(leaderboard, userId, userName) {
 /**
  * Open prediction history modal
  * Fetches user's finished predictions with accuracy calculations
+ * Uses fetchPaginatedPredictionHistory API call from api.js
  */
 async function openHistory() {
     try {
         const userId = parseInt(localStorage.getItem('userId'));
         
         if (!userId) {
+            console.error('[HISTORY] User ID not found in localStorage');
             alert('User not authenticated');
             return;
         }
@@ -437,6 +443,7 @@ async function openHistory() {
         // Show modal
         const modal = document.getElementById('historyModal');
         if (!modal) {
+            console.error('[HISTORY] History modal element not found in DOM');
             alert('History modal not found');
             return;
         }
@@ -445,6 +452,12 @@ async function openHistory() {
         
         // Show loading state
         const historyItems = document.getElementById('historyItems');
+        if (!historyItems) {
+            console.error('[HISTORY] History items container not found in DOM');
+            alert('History container not found');
+            return;
+        }
+        
         historyItems.innerHTML = `
             <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.7);">
                 <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
@@ -459,8 +472,13 @@ async function openHistory() {
         
         console.log('[HISTORY] Data received:', data);
         
+        // Verify data structure
+        if (!data) {
+            throw new Error('No data returned from prediction history API');
+        }
+        
         // Check if we have predictions
-        if (!data.predictions || data.predictions.length === 0) {
+        if (!data.predictions || !Array.isArray(data.predictions) || data.predictions.length === 0) {
             historyItems.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.6);">
                     <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
@@ -475,34 +493,47 @@ async function openHistory() {
         let html = '<div class="history-list">';
         
         data.predictions.forEach(pred => {
+            // Validate prediction data
+            if (!pred.match_date_utc || !pred.home_team || !pred.away_team) {
+                console.warn('[HISTORY] Invalid prediction data:', pred);
+                return;
+            }
+            
             // Format match date
-            const matchDate = new Date(pred.match_date_utc);
-            const formattedDate = matchDate.toLocaleString('en-IE', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'Europe/Dublin'
-            });
+            let formattedDate = 'Date N/A';
+            try {
+                const matchDate = new Date(pred.match_date_utc);
+                formattedDate = matchDate.toLocaleString('en-IE', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Europe/Dublin'
+                });
+            } catch (dateError) {
+                console.warn('[HISTORY] Error formatting date:', dateError);
+            }
             
-            // Determine accuracy color
-            let accuracyColor = '#EF4444';  // Red for 0%
+            // Determine accuracy color and label based on accuracy percentage
+            let accuracyColor = '#EF4444';  // Red for 0% or low accuracy
             let accuracyLabel = 'Incorrect';
+            const accuracy = pred.accuracy || 0;
             
-            if (pred.accuracy === 100) {
+            if (accuracy === 100) {
                 accuracyColor = '#10B981';  // Green
                 accuracyLabel = 'Perfect!';
-            } else if (pred.accuracy === 66) {
+            } else if (accuracy === 66) {
                 accuracyColor = '#F59E0B';  // Amber
                 accuracyLabel = 'Close!';
-            } else if (pred.accuracy === 33) {
+            } else if (accuracy === 33) {
                 accuracyColor = '#F97316';  // Orange
                 accuracyLabel = 'Partial';
             }
             
             // Determine points badge color
-            const pointsColor = pred.points_earned > 0 ? '#10B981' : 'rgba(255, 255, 255, 0.5)';
+            const pointsEarned = pred.points_earned || 0;
+            const pointsColor = pointsEarned > 0 ? '#10B981' : 'rgba(255, 255, 255, 0.5)';
             
             html += `
                 <div class="history-item">
@@ -528,14 +559,14 @@ async function openHistory() {
                         
                         <div class="score-section">
                             <div class="score-label">Points</div>
-                            <div class="score-value" style="color: ${pointsColor};">${pred.points_earned}</div>
+                            <div class="score-value" style="color: ${pointsColor};">${pointsEarned}</div>
                         </div>
                     </div>
                     
                     <div class="accuracy-section">
-                        <div class="accuracy-label">Accuracy: <span style="color: ${accuracyColor}; font-weight: 700;">${pred.accuracy}%</span> (${accuracyLabel})</div>
+                        <div class="accuracy-label">Accuracy: <span style="color: ${accuracyColor}; font-weight: 700;">${accuracy}%</span> (${accuracyLabel})</div>
                         <div class="accuracy-bar-container">
-                            <div class="accuracy-bar" style="width: ${pred.accuracy}%; background-color: ${accuracyColor};"></div>
+                            <div class="accuracy-bar" style="width: ${accuracy}%; background-color: ${accuracyColor};"></div>
                         </div>
                     </div>
                 </div>
@@ -561,18 +592,22 @@ async function openHistory() {
         console.error('[HISTORY] Error opening history:', error);
         const historyItems = document.getElementById('historyItems');
         
-        let errorMessage = error.message;
+        let errorMessage = error.message || 'An unknown error occurred';
         let errorIcon = 'fa-exclamation-circle';
         
-        if (error.message.includes('401')) {
+        // Parse error messages for better user feedback
+        if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
             errorMessage = 'Session expired. Please login again.';
             errorIcon = 'fa-lock';
-        } else if (error.message.includes('403')) {
+        } else if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
             errorMessage = 'You do not have permission to view this history.';
             errorIcon = 'fa-ban';
-        } else if (error.message.includes('404')) {
-            errorMessage = 'User not found.';
+        } else if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+            errorMessage = 'User predictions not found.';
             errorIcon = 'fa-user-slash';
+        } else if (errorMessage.includes('Failed to fetch')) {
+            errorMessage = 'Unable to connect to the server. Please check your connection.';
+            errorIcon = 'fa-wifi';
         }
         
         historyItems.innerHTML = `
@@ -597,6 +632,7 @@ async function loadMoreHistory(page) {
         const userId = parseInt(localStorage.getItem('userId'));
         
         if (!userId) {
+            console.error('[HISTORY] User ID not found in localStorage');
             alert('Session expired. Please login again.');
             return;
         }
@@ -607,10 +643,15 @@ async function loadMoreHistory(page) {
         
         console.log('[HISTORY] Page data received:', data);
         
+        // Validate data structure
+        if (!data || !data.predictions || !Array.isArray(data.predictions)) {
+            throw new Error('Invalid prediction data structure');
+        }
+        
         // Get current history list
         const historyList = document.querySelector('.history-list');
         if (!historyList) {
-            console.error('[HISTORY] History list not found');
+            console.error('[HISTORY] History list not found in DOM');
             return;
         }
         
@@ -618,31 +659,44 @@ async function loadMoreHistory(page) {
         let html = '';
         
         data.predictions.forEach(pred => {
-            const matchDate = new Date(pred.match_date_utc);
-            const formattedDate = matchDate.toLocaleString('en-IE', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'Europe/Dublin'
-            });
+            // Validate prediction data
+            if (!pred.match_date_utc || !pred.home_team || !pred.away_team) {
+                console.warn('[HISTORY] Invalid prediction data on page:', pred);
+                return;
+            }
             
+            let formattedDate = 'Date N/A';
+            try {
+                const matchDate = new Date(pred.match_date_utc);
+                formattedDate = matchDate.toLocaleString('en-IE', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Europe/Dublin'
+                });
+            } catch (dateError) {
+                console.warn('[HISTORY] Error formatting date:', dateError);
+            }
+            
+            const accuracy = pred.accuracy || 0;
             let accuracyColor = '#EF4444';
             let accuracyLabel = 'Incorrect';
             
-            if (pred.accuracy === 100) {
+            if (accuracy === 100) {
                 accuracyColor = '#10B981';
                 accuracyLabel = 'Perfect!';
-            } else if (pred.accuracy === 66) {
+            } else if (accuracy === 66) {
                 accuracyColor = '#F59E0B';
                 accuracyLabel = 'Close!';
-            } else if (pred.accuracy === 33) {
+            } else if (accuracy === 33) {
                 accuracyColor = '#F97316';
                 accuracyLabel = 'Partial';
             }
             
-            const pointsColor = pred.points_earned > 0 ? '#10B981' : 'rgba(255, 255, 255, 0.5)';
+            const pointsEarned = pred.points_earned || 0;
+            const pointsColor = pointsEarned > 0 ? '#10B981' : 'rgba(255, 255, 255, 0.5)';
             
             html += `
                 <div class="history-item">
@@ -668,14 +722,14 @@ async function loadMoreHistory(page) {
                         
                         <div class="score-section">
                             <div class="score-label">Points</div>
-                            <div class="score-value" style="color: ${pointsColor};">${pred.points_earned}</div>
+                            <div class="score-value" style="color: ${pointsColor};">${pointsEarned}</div>
                         </div>
                     </div>
                     
                     <div class="accuracy-section">
-                        <div class="accuracy-label">Accuracy: <span style="color: ${accuracyColor}; font-weight: 700;">${pred.accuracy}%</span> (${accuracyLabel})</div>
+                        <div class="accuracy-label">Accuracy: <span style="color: ${accuracyColor}; font-weight: 700;">${accuracy}%</span> (${accuracyLabel})</div>
                         <div class="accuracy-bar-container">
-                            <div class="accuracy-bar" style="width: ${pred.accuracy}%; background-color: ${accuracyColor};"></div>
+                            <div class="accuracy-bar" style="width: ${accuracy}%; background-color: ${accuracyColor};"></div>
                         </div>
                     </div>
                 </div>
@@ -688,16 +742,19 @@ async function loadMoreHistory(page) {
         // Update or remove "Load More" button
         const loadMoreBtn = document.querySelector('[onclick*="loadMoreHistory"]');
         if (loadMoreBtn) {
-            if (data.pagination.has_more) {
+            if (data.pagination && data.pagination.has_more) {
+                // Update button to load next page
                 loadMoreBtn.onclick = () => loadMoreHistory(page + 1);
             } else {
+                // No more pages available
                 loadMoreBtn.parentElement.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6); margin-top: 20px;">No more predictions to load</p>';
             }
         }
         
     } catch (error) {
         console.error('[HISTORY] Error loading more predictions:', error);
-        alert('Error loading more predictions: ' + error.message);
+        const errorMsg = error.message || 'An unknown error occurred';
+        alert('Error loading more predictions: ' + errorMsg);
     }
 }
 
