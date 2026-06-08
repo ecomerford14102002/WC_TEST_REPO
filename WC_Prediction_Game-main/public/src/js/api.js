@@ -19,7 +19,7 @@ const API_BASE_URL = (() => {
 async function registerUser(userData) {
     try {
         console.log('Calling registerUser with:', userData);
-        const response = await fetch(`${API_BASE_URL}/register`, {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ async function registerUser(userData) {
  */
 async function loginUser(email, password) {
     try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ async function fetchMatches(status = null) {
     try {
         console.log('Fetching matches from database...');
         
-        let url = `${API_BASE_URL}/matches`;
+        let url = `${API_BASE_URL}/api/matches`;
         if (status) {
             url += `?status=${encodeURIComponent(status)}`;
         }
@@ -172,7 +172,7 @@ async function fetchUserPredictions(userId) {
     try {
         console.log('[API] Fetching predictions for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/user_predictions?user_id=${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/user_predictions?user_id=${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ async function fetchPredictionHistory(userId) {
     try {
         console.log('[API] Fetching prediction history for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/prediction_history?user_id=${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/prediction_history?user_id=${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ async function submitPrediction(userId, matchId, predictedHomeScore, predictedAw
             throw new Error('User not authenticated');
         }
 
-        const response = await fetch(`${API_BASE_URL}/score_prediction`, {
+        const response = await fetch(`${API_BASE_URL}/api/score_prediction`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -283,7 +283,7 @@ async function getUserLeaderboard(limit = 10) {
     try {
         console.log('Fetching user leaderboard with limit:', limit);
         
-        const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -316,7 +316,7 @@ async function getTeamLeaderboard() {
     try {
         console.log('Fetching team leaderboard');
         
-        const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -348,7 +348,7 @@ async function getRegionalComparison() {
     try {
         console.log('Fetching regional comparison');
         
-        const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -382,7 +382,7 @@ async function getUserStats(userId, jwtToken) {
     try {
         console.log('Fetching user stats for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -421,7 +421,7 @@ async function submitAdminScore(scoreData) {
     try {
         console.log('[API] Submitting admin score:', scoreData);
         
-        const response = await fetch(`${API_BASE_URL}/admin_score_entry`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin_score_entry`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -451,7 +451,7 @@ async function fetchAllUsers() {
     try {
         console.log('[API] Fetching all users');
         
-        const response = await fetch(`${API_BASE_URL}/admin_users`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin_users`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -480,7 +480,7 @@ async function fetchAllPredictions() {
     try {
         console.log('[API] Fetching all predictions');
         
-        const response = await fetch(`${API_BASE_URL}/admin_predictions`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin_predictions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -509,7 +509,7 @@ async function fetchAdminLeaderboard() {
     try {
         console.log('[API] Fetching admin leaderboard');
         
-        const response = await fetch(`${API_BASE_URL}/admin_leaderboard`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin_leaderboard`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -23,13 +23,7 @@ function initApp() {
     allocationPage.className = 'page';
     allocationPage.id = 'allocationPage';
     allocationPage.innerHTML = createAllocationPage();
-    app.appendChild(allocationPage);
-    
-    // Create hype timer page
-    const hypeTimerPage = document.createElement('div');
-    hypeTimerPage.className = 'page';
-    hypeTimerPage.id = 'hypeTimerPage';
-    app.appendChild(hypeTimerPage);
+    app.appendChild(allocationPage);    // ✅ REMOVED: Hype timer page - app is now released
     
     // Create home page
     const homePage = document.createElement('div');

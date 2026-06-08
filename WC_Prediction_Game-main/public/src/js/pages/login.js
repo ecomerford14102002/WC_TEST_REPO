@@ -82,24 +82,9 @@ async function handleLogin(button) {
         button.disabled = false;
 
         // Show success message
-        alert(`✅ Login successful!\nWelcome back, ${response.username}!`);        // Check if user is admin
-        const isAdmin = response.is_admin === true || response.is_admin === 'true';
-        console.log('[LOGIN] User is admin:', isAdmin);
-
-        // Route based on admin status
-        if (isAdmin) {
-            // Admins go directly to home page
-            console.log('[LOGIN] Admin user detected - going to home page');
-            showPage('homePage');
-        } else {
-            // Regular users go to hype timer
-            console.log('[LOGIN] Regular user detected - going to hype timer');
-            const hypeTimerPage = document.getElementById('hypeTimerPage');
-            if (hypeTimerPage) {
-                hypeTimerPage.innerHTML = createHypeTimerPage();
-            }
-            showPage('hypeTimerPage');
-        }
+        alert(`✅ Login successful!\nWelcome back, ${response.username}!`);        // ✅ UPDATED: All users now go directly to home page (hype timer removed)
+        console.log('[LOGIN] User authenticated - going to home page');
+        showPage('homePage');
 
     } catch (error) {
         // Reset button
