@@ -86,7 +86,7 @@ function createHomePage() {
                     </div>
                 </div>
                 <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
-                <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Sweepstake Team:</div>
+                <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Sweeps[...]
                 <div id="userTeamPositionContainer">
                     <div style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.6);">
                         <i class="fas fa-spinner fa-spin"></i> Loading...
@@ -248,7 +248,7 @@ function renderUserLeaderboard() {
     if (userId && userName) {
         html += `
             <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
-            <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position:</div>
+            <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position:<[...]
             <ul class="leaderboard-list">
                 ${generateUserPositionHTML(userLeaderboardData, userId, userName)}
             </ul>
@@ -428,16 +428,9 @@ function generateUserPositionHTML(leaderboard, userId, userName) {
 async function openHistory() {
     try {
         const userId = parseInt(localStorage.getItem('userId'));
-        const jwtToken = localStorage.getItem('jwt_token');
         
         if (!userId) {
             alert('User not authenticated');
-            return;
-        }
-        
-        if (!jwtToken) {
-            alert('Session expired. Please login again.');
-            showPage('loginPage');
             return;
         }
         
@@ -459,25 +452,11 @@ async function openHistory() {
             </div>
         `;
         
-        // Fetch prediction history
+        // Fetch prediction history using API function
         console.log('[HISTORY] Fetching prediction history for user:', userId);
         
-        const response = await fetch(`/api/prediction-history/${userId}?page=1&limit=20`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            }
-        });
+        const data = await fetchPaginatedPredictionHistory(userId, 1, 20);
         
-        console.log('[HISTORY] Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
         console.log('[HISTORY] Data received:', data);
         
         // Check if we have predictions
@@ -616,28 +595,16 @@ async function openHistory() {
 async function loadMoreHistory(page) {
     try {
         const userId = parseInt(localStorage.getItem('userId'));
-        const jwtToken = localStorage.getItem('jwt_token');
         
-        if (!userId || !jwtToken) {
+        if (!userId) {
             alert('Session expired. Please login again.');
             return;
         }
         
         console.log('[HISTORY] Loading page:', page);
         
-        const response = await fetch(`/api/prediction-history/${userId}?page=${page}&limit=20`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            }
-        });
+        const data = await fetchPaginatedPredictionHistory(userId, page, 20);
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
         console.log('[HISTORY] Page data received:', data);
         
         // Get current history list
