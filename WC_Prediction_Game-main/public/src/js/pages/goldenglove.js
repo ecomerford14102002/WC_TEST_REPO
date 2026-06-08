@@ -85,27 +85,9 @@ async function submitGoldenGlove(button) {
             jwtToken: jwtToken ? 'present' : 'missing'
         });
 
-        // Call Lambda to save prediction
-        const response = await fetch('/api/team-assignment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            },
-            body: JSON.stringify({
-                action: 'predict_golden_glove',
-                user_id: parseInt(userId),
-                jwt_token: jwtToken,
-                player_name: goalkeeperName
-            })
-        });
-
-        const data = await response.json();
+        // Call API function to save prediction
+        const data = await submitGoldenGlovePrediction(userId, jwtToken, goalkeeperName);
         console.log('Golden glove prediction response:', data);
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Prediction save failed');
-        }
 
         // Save to localStorage
         const predictions = JSON.parse(localStorage.getItem('predictions') || '{}');
