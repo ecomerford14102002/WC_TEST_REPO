@@ -127,21 +127,21 @@ async function submitGoldenGlove(button) {
                 alert('Error: Homepage not found');
             }
         } else {
-            // Regular users go to hype timer
-            const hypeTimerPage = document.getElementById('hypeTimerPage');
-            if (hypeTimerPage) {
+              // non admins go to home page
+            const homePage = document.getElementById('homePage');
+            if (homePage) {
                 // Hide all pages
                 document.querySelectorAll('.page').forEach(page => {
                     page.classList.remove('active');
                     page.style.display = 'none';
                 });
                 
-                // Show hype timer page
-                hypeTimerPage.innerHTML = createHypeTimerPage();
-                hypeTimerPage.classList.add('active');
-                hypeTimerPage.style.display = 'block';
+                // Show home page
+                homePage.innerHTML = createHomePage();
+                homePage.classList.add('active');
+                homePage.style.display = 'block';
             } else {
-                alert('Error: Hype timer page not found');
+                alert('Error: Homepage not found');
             }
         }
 
