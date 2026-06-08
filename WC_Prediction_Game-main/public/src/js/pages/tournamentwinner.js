@@ -126,7 +126,7 @@ async function submitTournamentWinner(button) {
         const jwtToken = localStorage.getItem('jwt_token');
 
         // Extract country name without emoji (remove first 2 characters which are emoji + space)
-        const countryName = selection.substring(2).trim();
+        const countryName = selection.substring(3).trim();
 
         console.log('Saving tournament winner prediction:', {
             userId: userId,
