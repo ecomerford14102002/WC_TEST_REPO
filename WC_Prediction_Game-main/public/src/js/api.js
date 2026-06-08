@@ -530,6 +530,12 @@ async function fetchAdminLeaderboard() {
     }
 }
 
+/**
+ * Assign team to user
+ * @param {number} userId - User ID
+ * @param {string} jwtToken - JWT token
+ * @returns {Promise} Team assignment response
+ */
 async function assignTeamToUser(userId, jwtToken) {
     try {
         console.log('[API] Assigning team for user:', userId);
