@@ -125,14 +125,17 @@ async function submitTournamentWinner(button) {
         const userId = localStorage.getItem('userId');
         const jwtToken = localStorage.getItem('jwt_token');
 
+        // Extract country name without emoji (remove first 2 characters which are emoji + space)
+        const countryName = selection.substring(2).trim();
+
         console.log('Saving tournament winner prediction:', {
             userId: userId,
-            country: selection,
+            country: countryName,
             jwtToken: jwtToken ? 'present' : 'missing'
         });
 
         // Call API function to save prediction
-        const data = await submitTournamentWinnerPrediction(userId, jwtToken, selection);
+        const data = await submitTournamentWinnerPrediction(userId, jwtToken, countryName);
         console.log('Tournament winner prediction response:', data);
 
         // Save to localStorage
