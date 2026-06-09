@@ -233,12 +233,12 @@ async function fetchPredictionHistory(userId) {
 async function fetchPaginatedPredictionHistory(userId, page = 1, limit = 20) {
     try {
         console.log('[API] Fetching paginated prediction history for user:', userId, 'page:', page);
-        
-        const response = await fetch(`${API_BASE_URL}/prediction_history?user_id=${userId}&page=${page}&limit=${limit}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
+
+        // POST with body to match Lambda's event['body'] parsing
+        const response = await fetch(`${API_BASE_URL}/prediction_history`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
         });
 
         const data = await response.json();
@@ -247,8 +247,40 @@ async function fetchPaginatedPredictionHistory(userId, page = 1, limit = 20) {
             throw new Error(data.message || `Failed to fetch prediction history: ${response.status}`);
         }
 
-        console.log('[API] Paginated prediction history fetched successfully:', data);
-        return data;
+        // Lambda returns all predictions — filter to finished matches only
+        const allFinished = (data.predictions || []).filter(p => p.status === 'finished');
+
+        // Apply pagination client-side
+        const start = (page - 1) * limit;
+        const paginated = allFinished.slice(start, start + limit);
+
+        // Calculate accuracy for each prediction (Lambda doesn't return this)
+        const predictionsWithAccuracy = paginated.map(pred => {
+            const predictedResult = Math.sign(pred.predicted_home_score - pred.predicted_away_score);
+            const actualResult    = Math.sign(pred.home_score - pred.away_score);
+            const exactScore      = pred.predicted_home_score === pred.home_score &&
+                                    pred.predicted_away_score === pred.away_score;
+            const correctResult   = predictedResult === actualResult;
+            const correctMargin   = Math.abs(
+                (pred.predicted_home_score - pred.predicted_away_score) -
+                (pred.home_score - pred.away_score)
+            ) <= 1;
+
+            const accuracy = exactScore ? 100
+                           : correctResult && correctMargin ? 66
+                           : correctResult ? 33
+                           : 0;
+
+            return { ...pred, accuracy };
+        });
+
+        console.log('[API] Paginated prediction history fetched successfully:', predictionsWithAccuracy);
+
+        return {
+            predictions: predictionsWithAccuracy,
+            pagination: { has_more: start + limit < allFinished.length }
+        };
+
     } catch (error) {
         console.error('[API] Fetch paginated prediction history error:', error);
         throw error;
