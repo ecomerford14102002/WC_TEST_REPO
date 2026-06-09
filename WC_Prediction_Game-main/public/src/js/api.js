@@ -202,13 +202,11 @@ async function fetchPredictionHistory(userId) {
     try {
         console.log('[API] Fetching prediction history for user:', userId);
         
-        // FIXED: Use POST with body to match Lambda's event['body'] parsing
-        const response = await fetch(`${API_BASE_URL}/prediction_history`, {
-            method: 'POST',
+        const response = await fetch(`${API_BASE_URL}/prediction_history?user_id=${userId}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_id: userId })
+            }
         });
 
         const data = await response.json();
