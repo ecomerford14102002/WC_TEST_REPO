@@ -561,7 +561,7 @@ body {
 }
 
 .chart-placeholder {
-    height: 200px;
+    height: 280px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     display: flex;
@@ -569,42 +569,59 @@ body {
     justify-content: center;
     margin-top: 20px;
     position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 40px 20px 20px 20px;
 }
 
 .chart-bars {
     display: flex;
     align-items: flex-end;
-    gap: 40px;
-    height: 150px;
+    gap: 60px;
+    height: 180px;
+    min-width: min-content;
+    justify-content: center;
+    width: 100%;
 }
 
 .chart-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
 .bar {
-    width: 80px;
+    width: 100px;
     background: linear-gradient(180deg, var(--deloitte-green), #9BC53D);
     border-radius: 8px 8px 0 0;
     position: relative;
+    box-shadow: 0 4px 12px rgba(134, 188, 37, 0.2);
+    transition: all 0.3s ease;
+}
+
+.bar:hover {
+    box-shadow: 0 8px 20px rgba(134, 188, 37, 0.4);
+    transform: translateY(-5px);
 }
 
 .bar-label {
-    font-weight: 600;
+    font-weight: 700;
     color: white;
+    font-size: 1rem;
+    text-align: center;
 }
 
 .bar-value {
     position: absolute;
-    top: -25px;
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
-    font-weight: 700;
-    color: var(--deloitte-green);
+    font-weight: 800;
+    color: #86BC25;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* PREDICTION PAGE - IMPROVED UI */
