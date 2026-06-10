@@ -788,17 +788,17 @@ async function openHistory() {
             </div>
         `;
         
-        document.body.appendChild(historyModal);
-        
-        // Fetch prediction history from API
+        document.body.appendChild(historyModal);        // ✅ FIXED: Use correct endpoint /prediction_history with POST method
         console.log('[PREDICTIONS] Fetching history for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/prediction-history/${userId}`, {
-            method: 'GET',
+        const response = await fetch(`${API_BASE_URL}/prediction_history`, {
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            }
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
         });
         
         console.log('[PREDICTIONS] History response status:', response.status);

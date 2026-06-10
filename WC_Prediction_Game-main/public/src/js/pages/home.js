@@ -427,6 +427,7 @@ function generateUserPositionHTML(leaderboard, userId, userName) {
 
 /**
  * Open prediction history modal
+ * ✅ FIXED: Now uses the correct API endpoint and method
  * Fetches user's finished predictions with accuracy calculations
  * Uses fetchPaginatedPredictionHistory API call from api.js
  */
@@ -465,7 +466,7 @@ async function openHistory() {
             </div>
         `;
         
-        // Fetch prediction history using API function
+        // ✅ FIXED: Fetch prediction history using correct API function
         console.log('[HISTORY] Fetching prediction history for user:', userId);
         
         const data = await fetchPaginatedPredictionHistory(userId, 1, 20);
