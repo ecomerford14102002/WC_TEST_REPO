@@ -489,7 +489,7 @@ function jumpToSection(sectionName) {
 function getMatchState(match) {
     const now = new Date();
     const matchTime = new Date(match.match_date_utc);
-    const deadlineTime = new Date(matchTime.getTime() - (2 * 60 * 60 * 1000)); // 2 hours before
+    const deadlineTime = new Date(matchTime.getTime() - (1 * 60 * 60 * 1000)); // 2 hours before
     
     // ✅ FIXED: Check if match has actually started (current time >= match time)
     const isFinished = now >= matchTime;
