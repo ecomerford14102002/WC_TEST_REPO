@@ -172,11 +172,17 @@ async function fetchUserPredictions(userId) {
     try {
         console.log('[API] Fetching predictions for user:', userId);
         
-        const response = await fetch(`${API_BASE_URL}/user_predictions?user_id=${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
+        // const response = await fetch(`${API_BASE_URL}/user_predictions?user_id=${userId}`, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     }
+        // });
+
+        const response = await fetch(`${API_BASE_URL}/user_predictions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
         });
 
         const data = await response.json();
