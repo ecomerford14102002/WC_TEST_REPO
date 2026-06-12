@@ -1,4 +1,4 @@
-// api.js - FIXED VERSION (Using GET instead of POST for user_predictions)
+// api.js - FINAL FIX VERSION
 // API Service for communicating with AWS Lambda backend via API Gateway
 // Includes functions for match fetching, prediction submission, user prediction retrieval, and prediction history
 
@@ -164,8 +164,8 @@ async function fetchMatches(status = null) {
 }
 
 /**
- * ✅ FIXED: Fetch user's existing predictions for all matches
- * Now uses GET method with query parameter instead of POST
+ * ✅ FINAL FIX: Fetch user's existing predictions for all matches
+ * Now sends POST request with action field to match Lambda expectations
  * @param {number} userId - User ID
  * @returns {Promise} User predictions data
  */
@@ -173,26 +173,31 @@ async function fetchUserPredictions(userId) {
     try {
         console.log('[API] Fetching predictions for user:', userId);
         
-        // ✅ FIXED: Use GET method with query parameter
-        // The POST endpoint doesn't exist, but GET endpoint does
-        const response = await fetch(
-            `${API_BASE_URL}/user_predictions?user_id=${userId}`, 
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }
-        );
+        // ✅ FIXED: Send POST request with action field
+        // This matches what the Lambda function expects
+        const response = await fetch(`${API_BASE_URL}/user_predictions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'fetch_user_predictions',  // ✅ Lambda expects this!
+                user_id: userId
+            })
+        });
 
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch user predictions');
+            throw new Error(data.error || data.message || 'Failed to fetch user predictions');
         }
 
         console.log('[API] User predictions fetched successfully:', data);
-        return data;
+        
+        // ✅ Lambda returns array directly, wrap it in predictions object
+        return {
+            predictions: Array.isArray(data) ? data : []
+        };
     } catch (error) {
         console.error('[API] Fetch user predictions error:', error);
         throw error;
