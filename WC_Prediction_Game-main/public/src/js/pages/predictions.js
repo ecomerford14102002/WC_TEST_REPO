@@ -3,6 +3,7 @@
 // - Fetch matches from database
 // - Real-time countdown timers (2-hour deadline) with proper D/H/M/S format
 // - Load and display user's existing predictions ✅ FIXED: Now correctly displays 0 scores
+// - ✅ FIXED: Now loads predictions correctly on re-login
 // - Individual match submission
 // - Lock mechanism (2 hours before match)
 // - Show actual scores when finished
@@ -112,11 +113,24 @@ function updateTeamDisplay() {
 }
 
 /**
+ * ✅ FIXED: Clear predictions cache before loading new ones
+ * This ensures fresh data is loaded on re-login
+ */
+function clearPredictionsCache() {
+    console.log('[PREDICTIONS] Clearing predictions cache...');
+    userPredictions = {};
+    console.log('[PREDICTIONS] Cache cleared');
+}
+
+/**
  * Load matches and user predictions when predictions page is shown
  */
 async function loadMatches() {
     try {
         console.log('[PREDICTIONS] Loading matches and user predictions...');
+        
+        // ✅ FIXED: Clear cache at the start of load
+        clearPredictionsCache();
         
         // ✅ NEW: Update team display
         updateTeamDisplay();
@@ -140,10 +154,12 @@ async function loadMatches() {
         matchesData = matchesResponse.matches;
         console.log('[PREDICTIONS] Loaded', matchesData.length, 'matches');
         
-        // Fetch user's existing predictions if user is authenticated
+        // ✅ FIXED: Always fetch fresh predictions from API, don't use cached data
         if (userId) {
             try {
+                console.log('[PREDICTIONS] Fetching fresh predictions for user:', userId);
                 const predictionsResponse = await fetchUserPredictions(userId);
+                
                 if (predictionsResponse.predictions && predictionsResponse.predictions.length > 0) {
                     // Build a map of predictions by match_id for quick lookup
                     predictionsResponse.predictions.forEach(pred => {
@@ -158,6 +174,8 @@ async function loadMatches() {
                     });
                     console.log('[PREDICTIONS] Loaded', Object.keys(userPredictions).length, 'existing predictions');
                     console.log('[PREDICTIONS] Full predictions map:', userPredictions);
+                } else {
+                    console.log('[PREDICTIONS] No predictions found for this user');
                 }
             } catch (error) {
                 console.warn('[PREDICTIONS] Could not load existing predictions:', error);
