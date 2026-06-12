@@ -2,7 +2,7 @@
 // Features:
 // - Fetch matches from database
 // - Real-time countdown timers (2-hour deadline) with proper D/H/M/S format
-// - Load and display user's existing predictions
+// - Load and display user's existing predictions ✅ FIXED: Now correctly displays 0 scores
 // - Individual match submission
 // - Lock mechanism (2 hours before match)
 // - Show actual scores when finished
@@ -153,8 +153,11 @@ async function loadMatches() {
                             predicted_away_score: pred.predicted_away_score,
                             points_earned: pred.points_earned
                         };
+                        // FIX: Log each prediction to verify data is loaded correctly
+                        console.log(`[PREDICTIONS] Match ${pred.match_id}: ${pred.predicted_home_score}-${pred.predicted_away_score}`);
                     });
                     console.log('[PREDICTIONS] Loaded', Object.keys(userPredictions).length, 'existing predictions');
+                    console.log('[PREDICTIONS] Full predictions map:', userPredictions);
                 }
             } catch (error) {
                 console.warn('[PREDICTIONS] Could not load existing predictions:', error);
@@ -316,6 +319,7 @@ function renderMatches() {
 
 /**
  * ✅ NEW: Render individual match card
+ * ✅ FIXED: Now correctly displays predictions with 0 scores
  */
 function renderMatchCard(match) {
     const matchState = getMatchState(match);
@@ -324,8 +328,18 @@ function renderMatchCard(match) {
     
     // Get user's existing prediction if any
     const existingPrediction = userPredictions[match.match_id] || {};
-    const userHomeScore = existingPrediction.predicted_home_score || '';
-    const userAwayScore = existingPrediction.predicted_away_score || '';
+    // ✅ FIX: Check if prediction exists and use the actual value (including 0), not empty string
+    // This ensures that a score of 0 displays as 0, not as empty string
+    const userHomeScore = existingPrediction.predicted_home_score !== undefined ? existingPrediction.predicted_home_score : '';
+    const userAwayScore = existingPrediction.predicted_away_score !== undefined ? existingPrediction.predicted_away_score : '';
+    
+    // ✅ FIX: Debug logging to verify predictions are being loaded
+    console.log(`[RENDER_CARD] Match ${match.match_id} (${match.home_team} vs ${match.away_team}):`, {
+        existingPrediction: existingPrediction,
+        userHomeScore: userHomeScore,
+        userAwayScore: userAwayScore,
+        hasPrediction: !!existingPrediction.prediction_id
+    });
     
     // Format match date to Ireland timezone
     const matchDate = new Date(match.match_date_utc);
@@ -788,7 +802,9 @@ async function openHistory() {
             </div>
         `;
         
-        document.body.appendChild(historyModal);        // ✅ FIXED: Use correct endpoint /prediction_history with POST method
+        document.body.appendChild(historyModal);
+        
+        // ✅ FIXED: Use correct endpoint /prediction_history with POST method
         console.log('[PREDICTIONS] Fetching history for user:', userId);
         
         const response = await fetch(`${API_BASE_URL}/prediction_history`, {
