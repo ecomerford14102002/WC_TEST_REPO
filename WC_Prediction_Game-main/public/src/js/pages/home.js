@@ -74,7 +74,16 @@ function createHomePage() {
                         <i class="fas fa-spinner fa-spin"></i> Loading leaderboard...
                     </div>
                 </div>
+            <!-- ✅ NEW: User Position Section -->
+                <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
+                <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position</div>
+                <div id="userPositionContainer">
+                    <div style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.6);">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
             </div>
+
 
             <div class="content-card fadeInUp">
                 <h3 class="card-title">
@@ -117,7 +126,7 @@ async function loadLeaderboards() {
         
         // Load all leaderboards in parallel
         const [userLeaderboard, teamLeaderboard, regionalComparison] = await Promise.all([
-            getUserLeaderboard(10),
+            getUserLeaderboard(100),
             getTeamLeaderboard(100),
             getRegionalComparison()
         ]);
@@ -217,10 +226,13 @@ function renderUserLeaderboard() {
     }
     
     let html = '<ul class="leaderboard-list">';
-    
-    const currentUserId = parseInt(localStorage.getItem('userId'));
-    
-    userLeaderboardData.forEach(user => {
+
+const currentUserId = parseInt(localStorage.getItem('userId'));
+
+// ✅ FIXED: Only display TOP 10
+const top10 = userLeaderboardData.slice(0, 10);
+
+top10.forEach(user => {
         const isCurrentUser = user.user_id === currentUserId;
         const itemClass = isCurrentUser ? 'leaderboard-item user-highlight' : 'leaderboard-item';
         
@@ -244,24 +256,47 @@ function renderUserLeaderboard() {
     });
     
     html += '</ul>';
+container.innerHTML = html;
+
+// ✅ NEW: Render user position separately
+renderUserPosition();
+}
+
+
+// ✅ NEW: Render user's actual position (even if not in top 10)
+function renderUserPosition() {
+    const container = document.getElementById('userPositionContainer');
+    if (!container) return;
     
-    // Add user position if available
     const userId = parseInt(localStorage.getItem('userId'));
     const userName = localStorage.getItem('userName');
     
-    if (userId && userName) {
-        html += `
-            <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 1rem; letter-spacing: 8px;">• • •</div>
-            <div style="margin-bottom: 10px; padding-left: 12px; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your Position</div>
-            <ul class="leaderboard-list">
-                ${generateUserPositionHTML(userLeaderboardData, userId, userName)}
-            </ul>
-        `;
+    if (!userId || !userName) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.6);">User not found</div>';
+        return;
     }
+    
+    // Find user in ALL leaderboard data
+    const user = userLeaderboardData.find(u => u.user_id === userId);
+    
+    if (!user) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.6);">Not ranked yet</div>';
+        return;
+    }
+    
+    // Render user's position
+    const html = `
+        <ul class="leaderboard-list">
+            <li class="leaderboard-item user-highlight">
+                <span class="leaderboard-rank">${user.rank}</span>
+                <span>${userName} <span class="user-badge">YOU</span></span>
+                <span class="leaderboard-score" style="background: linear-gradient(135deg, #FF8C00, #FFA500);">${user.total_points}</span>
+            </li>
+        </ul>
+    `;
     
     container.innerHTML = html;
 }
-
 // Render team leaderboard
 function renderTeamLeaderboard() {
     const container = document.getElementById('teamLeaderboardContainer');
