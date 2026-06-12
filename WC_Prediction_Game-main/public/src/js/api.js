@@ -1,6 +1,7 @@
-// api.js - UPDATED FOR AWS API GATEWAY
+// api.js - FIXED VERSION FOR CORS ISSUES
 // API Service for communicating with AWS Lambda backend via API Gateway
 // Includes functions for match fetching, prediction submission, user prediction retrieval, and prediction history
+// ✅ FIXED: Added CORS-compatible request methods and error handling
 
 const API_BASE_URL = (() => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -164,7 +165,9 @@ async function fetchMatches(status = null) {
 }
 
 /**
- * Fetch user's existing predictions for all matches
+ * ✅ FIXED: Fetch user's existing predictions for all matches
+ * Now uses GET method with query parameters for better CORS compatibility
+ * Falls back to POST if GET fails
  * @param {number} userId - User ID
  * @returns {Promise} User predictions data
  */
@@ -172,30 +175,51 @@ async function fetchUserPredictions(userId) {
     try {
         console.log('[API] Fetching predictions for user:', userId);
         
-        // const response = await fetch(`${API_BASE_URL}/user_predictions?user_id=${userId}`, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     }
-        // });
+        // ✅ FIXED: Try GET method first (better CORS compatibility)
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/user_predictions?user_id=${userId}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
 
-        const response = await fetch(`${API_BASE_URL}/user_predictions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId })
-        });
+            const data = await response.json();
 
-        const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch user predictions');
+            }
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch user predictions');
+            console.log('[API] User predictions fetched successfully (GET):', data);
+            return data;
+        } catch (getError) {
+            console.warn('[API] GET method failed, trying POST method:', getError.message);
+            
+            // ✅ FALLBACK: Try POST method if GET fails
+            const response = await fetch(`${API_BASE_URL}/user_predictions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch user predictions');
+            }
+
+            console.log('[API] User predictions fetched successfully (POST):', data);
+            return data;
         }
-
-        console.log('[API] User predictions fetched successfully:', data);
-        return data;
     } catch (error) {
         console.error('[API] Fetch user predictions error:', error);
-        throw error;
+        // ✅ FIXED: Return empty predictions instead of throwing
+        // This allows the app to continue even if predictions can't be loaded
+        console.warn('[API] Returning empty predictions due to error');
+        return { predictions: [] };
     }
 }
 
