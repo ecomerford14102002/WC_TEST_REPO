@@ -389,6 +389,24 @@ function renderRegionalComparison() {
     });
     
     html += '</div></div>';
+    
+    // Add standardized score section
+    html += '<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">';
+    html += '<div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 12px; font-weight: 600;">Standardized Score (Points per User):</div>';
+    html += '<div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">';
+    
+    regionalComparisonData.forEach(region => {
+        const standardizedScore = region.normalized_score || (region.total_points / region.total_users);
+        html += `
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px;">${region.office_location}</div>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #FFA500;">${standardizedScore.toFixed(2)}</div>
+            </div>
+        `;
+    });
+    
+    html += '</div></div>';
+    
     container.innerHTML = html;
 }
 
