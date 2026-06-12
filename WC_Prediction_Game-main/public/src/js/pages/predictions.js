@@ -116,11 +116,11 @@ function updateTeamDisplay() {
  * ✅ FIXED: Clear predictions cache before loading new ones
  * This ensures fresh data is loaded on re-login
  */
-function clearPredictionsCache() {
-    console.log('[PREDICTIONS] Clearing predictions cache...');
-    userPredictions = {};
-    console.log('[PREDICTIONS] Cache cleared');
-}
+// function clearPredictionsCache() {
+//     console.log('[PREDICTIONS] Clearing predictions cache...');
+//     userPredictions = {};
+//     console.log('[PREDICTIONS] Cache cleared');
+// }
 
 /**
  * Load matches and user predictions when predictions page is shown
@@ -130,7 +130,7 @@ async function loadMatches() {
         console.log('[PREDICTIONS] Loading matches and user predictions...');
         
         // ✅ FIXED: Clear cache at the start of load
-        clearPredictionsCache();
+        // clearPredictionsCache();
         
         // ✅ NEW: Update team display
         updateTeamDisplay();
