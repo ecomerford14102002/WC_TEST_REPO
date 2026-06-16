@@ -556,19 +556,43 @@ async function fetchAllPredictions() {
         console.log('[API] Fetching all predictions');
         
         const response = await fetch(`${API_BASE_URL}/admin_predictions`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify({
+                action: 'get_all_predictions'
+            })
         });
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // ✅ Fallback to GET if POST fails with 404 or 405
+        if (!response.ok && (response.status === 404 || response.status === 405)) {
+            console.log('[API] POST failed, trying GET method...');
+            
+            const getResponse = await fetch(`${API_BASE_URL}/admin_predictions`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            data = await getResponse.json();
+
+            if (!getResponse.ok) {
+                throw new Error(data.message || 'Failed to fetch predictions');
+            }
+
+            console.log('[API] Predictions fetched successfully via GET:', data);
+            return data;
+        }
 
         if (!response.ok) {
             throw new Error(data.message || 'Failed to fetch predictions');
         }
 
-        console.log('[API] Predictions fetched successfully:', data);
+        console.log('[API] Predictions fetched successfully via POST:', data);
         return data;
     } catch (error) {
         console.error('[API] Fetch predictions error:', error);
@@ -585,19 +609,43 @@ async function fetchAdminLeaderboard() {
         console.log('[API] Fetching admin leaderboard');
         
         const response = await fetch(`${API_BASE_URL}/admin_leaderboard`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify({
+                action: 'get_admin_leaderboard'
+            })
         });
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // ✅ Fallback to GET if POST fails with 404 or 405
+        if (!response.ok && (response.status === 404 || response.status === 405)) {
+            console.log('[API] POST failed, trying GET method...');
+            
+            const getResponse = await fetch(`${API_BASE_URL}/admin_leaderboard`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            data = await getResponse.json();
+
+            if (!getResponse.ok) {
+                throw new Error(data.message || 'Failed to fetch leaderboard');
+            }
+
+            console.log('[API] Leaderboard fetched successfully via GET:', data);
+            return data;
+        }
 
         if (!response.ok) {
             throw new Error(data.message || 'Failed to fetch leaderboard');
         }
 
-        console.log('[API] Leaderboard fetched successfully:', data);
+        console.log('[API] Leaderboard fetched successfully via POST:', data);
         return data;
     } catch (error) {
         console.error('[API] Fetch leaderboard error:', error);
