@@ -893,6 +893,59 @@ def admin_get_matches():
             'message': 'Internal server error'
         }), 500
 
+@app.route('/api/admin/reset-password', methods=['POST'])
+def admin_reset_password():
+    """Reset user password"""
+    import hashlib
+    import mysql.connector
+    
+    try:
+        logger.info("[ADMIN_RESET_PASSWORD] Password reset request received")
+        
+        data = request.get_json()
+        email = data.get('email')
+        new_password = data.get('new_password')
+        
+        if not email or not new_password:
+            logger.error("[ADMIN_RESET_PASSWORD] Missing email or password")
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing email or new_password'
+            }), 400
+        
+        try:
+            connection = mysql.connector.connect(
+                host=os.environ.get('DB_HOST'),
+                user=os.environ.get('DB_USER'),
+                password=os.environ.get('DB_PASSWORD'),
+                database=os.environ.get('DB_NAME')
+            )
+            cursor = connection.cursor()
+            password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+            cursor.execute("UPDATE users SET password_hash = %s WHERE email = %s", 
+                           (password_hash, email))
+            connection.commit()
+            cursor.close()
+            connection.close()
+            
+            logger.info(f"[ADMIN_RESET_PASSWORD] Password reset for: {email}")
+            return jsonify({
+                'status': 'success',
+                'message': 'Password reset successfully'
+            }), 200
+        except Exception as e:
+            logger.error(f"[ADMIN_RESET_PASSWORD] Database error: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+    
+    except Exception as e:
+        logger.error(f"[ADMIN_RESET_PASSWORD] Unexpected error: {str(e)}", exc_info=True)
+        return jsonify({
+            'status': 'error',
+            'message': 'Internal server error'
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
