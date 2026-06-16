@@ -1,4 +1,4 @@
-// Admin Dashboard - WORKING FIX
+// Admin Dashboard - UPDATED WITH POST REQUESTS
 // Uses proper click handlers instead of onchange
 
 // Check if user is admin
@@ -210,7 +210,6 @@ function switchAdminTab(event, tabName) {
     // Load data for the tab ONLY when clicked
     console.log('[ADMIN] Loading data for tab:', tabName);
     if (tabName === 'match-scores') {
-        // Don't auto-load, user clicks button
         console.log('[ADMIN] Match Scores tab activated - waiting for user to click Load button');
     } else if (tabName === 'users') {
         loadUsers();
@@ -379,7 +378,9 @@ async function submitMatchScore() {
         console.log('[ADMIN] Score submission response:', response);
         
         if (response.status === 'success') {
-            alert(`✅ Score submitted!\n${response.home_team} ${response.home_score} - ${response.away_score} ${response.away_team}\n${response.predictions_updated} predictions updated`);
+            alert(`✅ Score submitted!
+${response.home_team} ${response.home_score} - ${response.away_score} ${response.away_team}
+${response.predictions_updated} predictions updated`);
             
             // Reload matches
             loadAdminMatches();
@@ -495,17 +496,31 @@ async function loadPredictions() {
     try {
         console.log('[ADMIN] Loading predictions...');
         
-        const response = await fetchAllPredictions();
+        // ✅ FIXED: Use POST instead of GET
+        const response = await fetch(`${API_BASE_URL}/admin_predictions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get_all_predictions' })
+        });
         
-        if (!response.predictions || response.predictions.length === 0) {
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch predictions');
+        }
+        
+        // Handle both direct response and wrapped response
+        const predictions = data.data?.predictions || data.predictions || [];
+        
+        if (!predictions || predictions.length === 0) {
             document.getElementById('predictions-container').innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6);">No predictions found</p>';
             return;
         }
         
-        allPredictions = response.predictions;
+        allPredictions = predictions;
         renderPredictions(allPredictions);
         
-        console.log('[ADMIN] Predictions loaded:', response.predictions.length);
+        console.log('[ADMIN] Predictions loaded:', predictions.length);
     } catch (error) {
         console.error('[ADMIN] Error loading predictions:', error);
         document.getElementById('predictions-container').innerHTML = `<p style="text-align: center; color: #EF4444;">Error loading predictions: ${error.message}</p>`;
@@ -528,6 +543,7 @@ function renderPredictions(predictions) {
                     <th>Type</th>
                     <th>Prediction</th>
                     <th>Result</th>
+                    <th>Accuracy</th>
                     <th>Points</th>
                     <th>Date</th>
                 </tr>
@@ -546,12 +562,18 @@ function renderPredictions(predictions) {
         let typeDisplay = '';
         let predictionDisplay = '';
         let resultDisplay = '';
+        let accuracyDisplay = '-';
         let pointsDisplay = pred.points_earned || '0';
         
         if (pred.prediction_type === 'match') {
             typeDisplay = '<span class="badge-type match">Match Score</span>';
-            predictionDisplay = `${pred.home_team} ${pred.predicted_home_score}-${pred.predicted_away_score} ${pred.away_team}`;
-            resultDisplay = pred.home_score !== null ? `${pred.home_team} ${pred.home_score}-${pred.away_score} ${pred.away_team}` : '-';
+            predictionDisplay = `${pred.predicted_home_score}-${pred.predicted_away_score}`;
+            resultDisplay = pred.home_score !== null ? `${pred.home_score}-${pred.away_score}` : '-';
+            
+            // Calculate accuracy
+            if (pred.accuracy !== undefined) {
+                accuracyDisplay = `<span style="color: ${pred.accuracy === 100 ? '#10B981' : pred.accuracy === 66 ? '#F59E0B' : pred.accuracy === 33 ? '#F97316' : '#EF4444'};">${pred.accuracy}%</span>`;
+            }
         } else if (pred.prediction_type === 'tournament') {
             typeDisplay = '<span class="badge-type tournament">Tournament</span>';
             predictionDisplay = pred.country_guess || '-';
@@ -574,6 +596,7 @@ function renderPredictions(predictions) {
                 <td>${typeDisplay}</td>
                 <td>${predictionDisplay}</td>
                 <td>${resultDisplay}</td>
+                <td>${accuracyDisplay}</td>
                 <td><span class="${pointsClass}">+${pointsDisplay}</span></td>
                 <td>${predDate}</td>
             </tr>
@@ -607,13 +630,27 @@ async function loadLeaderboard() {
     try {
         console.log('[ADMIN] Loading leaderboard...');
         
-        const response = await fetchAdminLeaderboard();
+        // ✅ FIXED: Use POST instead of GET
+        const response = await fetch(`${API_BASE_URL}/admin_leaderboard`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get_admin_leaderboard' })
+        });
         
-        document.getElementById('stat-total-users').textContent = response.stats.total_users;
-        document.getElementById('stat-total-predictions').textContent = response.stats.total_predictions;
-        document.getElementById('stat-completed-matches').textContent = response.stats.completed_matches;
+        const data = await response.json();
         
-        renderLeaderboard(response.leaderboard);
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch leaderboard');
+        }
+        
+        // Handle both direct response and wrapped response
+        const responseData = data.data || data;
+        
+        document.getElementById('stat-total-users').textContent = responseData.stats?.total_users || 0;
+        document.getElementById('stat-total-predictions').textContent = responseData.stats?.total_predictions || 0;
+        document.getElementById('stat-completed-matches').textContent = responseData.stats?.completed_matches || 0;
+        
+        renderLeaderboard(responseData.leaderboard || []);
         
         console.log('[ADMIN] Leaderboard loaded');
     } catch (error) {
@@ -633,6 +670,7 @@ function renderLeaderboard(leaderboard) {
                     <th>User</th>
                     <th>Team</th>
                     <th>Points</th>
+                    <th>Accuracy</th>
                     <th>Predictions</th>
                 </tr>
             </thead>
@@ -640,12 +678,15 @@ function renderLeaderboard(leaderboard) {
     `;
     
     leaderboard.forEach(user => {
+        const accuracy = user.accuracy_percentage ? `${user.accuracy_percentage.toFixed(1)}%` : '-';
+        
         html += `
             <tr>
                 <td>${user.rank}</td>
                 <td>${user.username}</td>
                 <td>${user.sweepstake_country || '-'}</td>
                 <td><span class="score-badge">${user.total_points}</span></td>
+                <td>${accuracy}</td>
                 <td>${user.prediction_count}</td>
             </tr>
         `;
