@@ -96,3 +96,4 @@ async function handleLogin(button) {
         alert(`❌ Login failed: ${error.message}`);
     }
 }
+
