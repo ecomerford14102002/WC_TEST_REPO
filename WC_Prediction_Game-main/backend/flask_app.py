@@ -954,5 +954,91 @@ def admin_reset_password():
             'message': 'Internal server error'
         }), 500
 
+@app.route('/api/password-reset-request', methods=['POST'])
+def password_reset_request():
+    """Request password reset - sends email with reset link"""
+    try:
+        logger.info("[PASSWORD_RESET_REQUEST] Request received")
+        
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({'status': 'error', 'message': 'Email is required'}), 400
+        
+        LAMBDA_URL = os.getenv('LAMBDA_PASSWORD_RESET_URL')
+        
+        if not LAMBDA_URL:
+            logger.error("[PASSWORD_RESET_REQUEST] Lambda URL not configured")
+            return jsonify({'status': 'error', 'message': 'Service unavailable'}), 500
+        
+        response = requests.post(
+            LAMBDA_URL,
+            json={
+                'body': json.dumps({
+                    'action': 'request_reset',
+                    'email': email
+                })
+            },
+            timeout=30
+        )
+        
+        lambda_response = response.json()
+        
+        if 'body' in lambda_response:
+            actual_response = json.loads(lambda_response['body'])
+            status_code = lambda_response.get('statusCode', 200)
+            return actual_response, status_code
+        
+        return lambda_response, response.status_code
+        
+    except Exception as e:
+        logger.error(f"[PASSWORD_RESET_REQUEST] Error: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
+
+@app.route('/api/password-reset', methods=['POST'])
+def password_reset():
+    """Reset password with token"""
+    try:
+        logger.info("[PASSWORD_RESET] Request received")
+        
+        data = request.get_json()
+        token = data.get('token')
+        new_password = data.get('new_password')
+        
+        if not token or not new_password:
+            return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
+        
+        LAMBDA_URL = os.getenv('LAMBDA_PASSWORD_RESET_URL')
+        
+        if not LAMBDA_URL:
+            logger.error("[PASSWORD_RESET] Lambda URL not configured")
+            return jsonify({'status': 'error', 'message': 'Service unavailable'}), 500
+        
+        response = requests.post(
+            LAMBDA_URL,
+            json={
+                'body': json.dumps({
+                    'action': 'reset_password',
+                    'token': token,
+                    'new_password': new_password
+                })
+            },
+            timeout=30
+        )
+        
+        lambda_response = response.json()
+        
+        if 'body' in lambda_response:
+            actual_response = json.loads(lambda_response['body'])
+            status_code = lambda_response.get('statusCode', 200)
+            return actual_response, status_code
+        
+        return lambda_response, response.status_code
+        
+    except Exception as e:
+        logger.error(f"[PASSWORD_RESET] Error: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
