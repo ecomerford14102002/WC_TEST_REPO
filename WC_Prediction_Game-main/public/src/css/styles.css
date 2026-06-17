@@ -1243,3 +1243,32 @@ body {
         max-width: 100% !important;
     }
 }
+
+/* ============================================================================
+   USER LEADERBOARD SCROLLABLE CONTAINER
+   ============================================================================ */
+
+/* User Leaderboard Container - Enable Scrolling (UPDATED) */
+#userLeaderboardContainer {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+#userLeaderboardContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+#userLeaderboardContainer::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+#userLeaderboardContainer::-webkit-scrollbar-thumb {
+    background: rgba(134, 188, 37, 0.4);
+    border-radius: 10px;
+}
+
+#userLeaderboardContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(134, 188, 37, 0.6);
+}

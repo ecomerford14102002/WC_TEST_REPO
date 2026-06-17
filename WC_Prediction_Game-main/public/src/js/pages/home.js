@@ -215,7 +215,7 @@ function updateMyStats() {
     }
 }
 
-// Render user leaderboard
+// ✅ UPDATED: Render user leaderboard with ALL users and scrollable container
 function renderUserLeaderboard() {
     const container = document.getElementById('userLeaderboardContainer');
     if (!container) return;
@@ -227,12 +227,10 @@ function renderUserLeaderboard() {
     
     let html = '<ul class="leaderboard-list">';
 
-const currentUserId = parseInt(localStorage.getItem('userId'));
+    const currentUserId = parseInt(localStorage.getItem('userId'));
 
-// ✅ FIXED: Only display TOP 10
-const top10 = userLeaderboardData.slice(0, 10);
-
-top10.forEach(user => {
+    // ✅ UPDATED: Display ALL users (not just top 10)
+    userLeaderboardData.forEach(user => {
         const isCurrentUser = user.user_id === currentUserId;
         const itemClass = isCurrentUser ? 'leaderboard-item user-highlight' : 'leaderboard-item';
         
@@ -256,10 +254,10 @@ top10.forEach(user => {
     });
     
     html += '</ul>';
-container.innerHTML = html;
+    container.innerHTML = html;
 
-// ✅ NEW: Render user position separately
-renderUserPosition();
+    // ✅ NEW: Render user position separately
+    renderUserPosition();
 }
 
 
