@@ -51,6 +51,8 @@ LAMBDA_ADMIN_USERS_URL = os.getenv('LAMBDA_ADMIN_USERS_URL')
 LAMBDA_ADMIN_PREDICTIONS_URL = os.getenv('LAMBDA_ADMIN_PREDICTIONS_URL')
 LAMBDA_ADMIN_LEADERBOARD_URL = os.getenv('LAMBDA_ADMIN_LEADERBOARD_URL')
 LAMBDA_ADMIN_GET_MATCHES_URL = os.getenv('LAMBDA_ADMIN_GET_MATCHES_URL')
+LAMBDA_COMMENTS_URL = os.getenv('LAMBDA_COMMENTS_URL')
+
 
 # Log startup
 logger.info("=" * 60)
@@ -1039,6 +1041,102 @@ def password_reset():
     except Exception as e:
         logger.error(f"[PASSWORD_RESET] Error: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
+    
+@app.route('/api/comments', methods=['POST'])
+def handle_comments():
+    """
+    Unified comments handler - forwards all comment actions to Lambda
+    
+    Supported actions:
+    - post_comment: Create new comment
+    - get_comments: Retrieve comments for a user
+    - delete_comment: Soft delete a comment
+    - add_reaction: Add emoji reaction to comment
+    - remove_reaction: Remove emoji reaction from comment
+    """
+    try:
+        logger.info("[COMMENTS] Comments request received")
+        
+        data = request.get_json()
+        
+        if not data:
+            logger.error("[COMMENTS] Missing request body")
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing request body'
+            }), 400
+        
+        action = data.get('action')
+        if not action:
+            logger.error("[COMMENTS] Missing action field")
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing action field'
+            }), 400
+        
+        LAMBDA_COMMENTS_URL = os.getenv('LAMBDA_COMMENTS_URL')
+        
+        if not LAMBDA_COMMENTS_URL:
+            logger.error("[COMMENTS] Lambda URL not configured")
+            return jsonify({
+                'status': 'error',
+                'message': 'Lambda URL not configured'
+            }), 500
+        
+        # Wrap data in Lambda event format
+        lambda_event = {
+            'body': json.dumps(data)
+        }
+        
+        logger.info(f"[COMMENTS] Action: {action}")
+        logger.info(f"[COMMENTS] Forwarding to Lambda: {LAMBDA_COMMENTS_URL}")
+        
+        try:
+            response = requests.post(
+                LAMBDA_COMMENTS_URL,
+                json=lambda_event,
+                timeout=30
+            )
+            
+            logger.info(f"[COMMENTS] Lambda response status: {response.status_code}")
+            
+            lambda_response = response.json()
+            
+            # Extract actual response from Lambda wrapper
+            if 'body' in lambda_response:
+                try:
+                    actual_response = json.loads(lambda_response['body'])
+                    status_code = lambda_response.get('statusCode', 200)
+                    logger.info(f"[COMMENTS] Response: {actual_response}")
+                    return actual_response, status_code
+                except json.JSONDecodeError as e:
+                    logger.error(f"[COMMENTS] Failed to parse Lambda body: {str(e)}")
+                    return lambda_response, response.status_code
+            else:
+                return lambda_response, response.status_code
+        
+        except requests.exceptions.Timeout:
+            logger.error("[COMMENTS] Lambda request timed out (30 seconds)")
+            return jsonify({
+                'status': 'error',
+                'message': 'Lambda request timed out',
+                'error_code': 'TIMEOUT'
+            }), 504
+        
+        except requests.exceptions.RequestException as e:
+            logger.error(f"[COMMENTS] Lambda request failed: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': 'Lambda request failed',
+                'error_code': 'LAMBDA_ERROR'
+            }), 500
+    
+    except Exception as e:
+        logger.error(f"[COMMENTS] Unexpected error: {str(e)}", exc_info=True)
+        return jsonify({
+            'status': 'error',
+            'message': 'Internal server error'
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

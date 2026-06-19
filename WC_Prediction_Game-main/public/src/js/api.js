@@ -941,3 +941,197 @@ async function resetPassword(token, newPassword) {
         throw error;
     }
 }
+
+/**
+ * Post a new comment
+ * @param {number} userId - User ID
+ * @param {number} targetUserId - User ID being commented on
+ * @param {string} content - Comment content (max 500 chars)
+ * @param {string} jwtToken - JWT token
+ * @returns {Promise} Response from server
+ */
+async function postComment(userId, targetUserId, content, jwtToken) {
+    try {
+        console.log('[API] Posting comment for user:', userId);
+        
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'post_comment',
+                user_id: userId,
+                target_user_id: targetUserId,
+                content: content,
+                jwt_token: jwtToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to post comment');
+        }
+
+        console.log('[API] Comment posted successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Post comment error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get comments for a user
+ * @param {number} targetUserId - User ID to get comments for
+ * @param {number} currentUserId - Current user ID (optional, for checking reactions)
+ * @returns {Promise} Comments data
+ */
+async function getComments(targetUserId, currentUserId = null) {
+    try {
+        console.log('[API] Fetching comments for user:', targetUserId);
+        
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'get_comments',
+                target_user_id: targetUserId,
+                user_id: currentUserId
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch comments');
+        }
+
+        console.log('[API] Comments fetched successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Get comments error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete a comment
+ * @param {number} commentId - Comment ID
+ * @param {number} userId - User ID (must be comment author)
+ * @param {string} jwtToken - JWT token
+ * @returns {Promise} Response from server
+ */
+async function deleteComment(commentId, userId, jwtToken) {
+    try {
+        console.log('[API] Deleting comment:', commentId);
+        
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'delete_comment',
+                comment_id: commentId,
+                user_id: userId,
+                jwt_token: jwtToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to delete comment');
+        }
+
+        console.log('[API] Comment deleted successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Delete comment error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Add a reaction to a comment
+ * @param {number} commentId - Comment ID
+ * @param {number} userId - User ID
+ * @param {string} reactionType - Reaction emoji (👍, 😂, 🔥, ❤️, 🤯, 😢)
+ * @param {string} jwtToken - JWT token
+ * @returns {Promise} Response from server
+ */
+async function addReaction(commentId, userId, reactionType, jwtToken) {
+    try {
+        console.log('[API] Adding reaction:', reactionType, 'to comment:', commentId);
+        
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'add_reaction',
+                comment_id: commentId,
+                user_id: userId,
+                reaction_type: reactionType,
+                jwt_token: jwtToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to add reaction');
+        }
+
+        console.log('[API] Reaction added successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Add reaction error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Remove a reaction from a comment
+ * @param {number} commentId - Comment ID
+ * @param {number} userId - User ID
+ * @param {string} reactionType - Reaction emoji
+ * @param {string} jwtToken - JWT token
+ * @returns {Promise} Response from server
+ */
+async function removeReaction(commentId, userId, reactionType, jwtToken) {
+    try {
+        console.log('[API] Removing reaction:', reactionType, 'from comment:', commentId);
+        
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'remove_reaction',
+                comment_id: commentId,
+                user_id: userId,
+                reaction_type: reactionType,
+                jwt_token: jwtToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to remove reaction');
+        }
+
+        console.log('[API] Reaction removed successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Remove reaction error:', error);
+        throw error;
+    }
+}

@@ -116,6 +116,25 @@ function createHomePage() {
                 </div>
             </div>
         </div>
+
+        <!-- Comments Section -->
+        <div id="comments-container" style="grid-column: 1 / -1;">
+            <h3 class="comments-header">💬 Comments</h3>
+            
+            <!-- Hidden input to store target user ID -->
+            <input type="hidden" id="target-user-id" value="">
+            
+            <!-- Comment Form -->
+            <form id="comment-form">
+                <textarea id="comment-textarea" placeholder="Share your thoughts..." maxlength="500"></textarea>
+                <div class="char-counter"><span id="char-counter">0/500</span></div>
+                <button type="submit" id="submit-comment-btn" disabled>Post Comment</button>
+            </form>
+            
+            <!-- Comments List -->
+            <div id="comments-list"></div>
+        </div>
+        </div>
     `;
 }
 
@@ -839,6 +858,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (homePage && homePage.classList.contains('active')) {
             // Load leaderboards after a short delay to ensure DOM is ready
             setTimeout(loadLeaderboards, 100);
+            
+            // Initialize comments after leaderboards load
+            setTimeout(() => {
+                const userId = parseInt(localStorage.getItem('userId'));
+                if (userId) {
+                    document.getElementById('target-user-id').value = userId;
+                    initializeComments(userId);
+                }
+            }, 500);
         }
     });
     
