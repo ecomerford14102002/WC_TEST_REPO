@@ -1,14 +1,13 @@
-// comments.js - Comment Section Management
+// comments.js - Comment Section Management - UPDATED FOR HOME PAGE
 
 const VALID_REACTIONS = ['👍', '😂', '🔥', '❤️', '🤯', '😢'];
 
 /**
- * Initialize comments section for a user profile
- * @param {number} targetUserId - User ID to load comments for
+ * Initialize comments section on home page
  */
-async function initializeComments(targetUserId) {
+async function initializeComments() {
     try {
-        console.log('[COMMENTS] Initializing comments for user:', targetUserId);
+        console.log('[COMMENTS] Initializing comments section');
         
         const commentsContainer = document.getElementById('comments-container');
         if (!commentsContainer) {
@@ -17,10 +16,10 @@ async function initializeComments(targetUserId) {
         }
         
         // Load existing comments
-        await loadComments(targetUserId);
+        await loadComments();
         
         // Setup comment form
-        setupCommentForm(targetUserId);
+        setupCommentForm();
         
     } catch (error) {
         console.error('[COMMENTS] Initialization error:', error);
@@ -30,13 +29,25 @@ async function initializeComments(targetUserId) {
 /**
  * Load and display comments
  */
-async function loadComments(targetUserId) {
+async function loadComments() {
     try {
-        console.log('[COMMENTS] Loading comments for user:', targetUserId);
+        console.log('[COMMENTS] Loading comments');
         
-        const currentUserId = parseInt(localStorage.getItem('userId'));
-        const data = await getComments(targetUserId, currentUserId);
-        const comments = data.data?.comments || [];
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const comments = data.comments || data.data?.comments || [];
+        
+        console.log('[COMMENTS] Loaded comments:', comments);
         
         const commentsList = document.getElementById('comments-list');
         if (!commentsList) return;
@@ -44,7 +55,7 @@ async function loadComments(targetUserId) {
         commentsList.innerHTML = '';
         
         if (comments.length === 0) {
-            commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
+            commentsList.innerHTML = '<div class="no-comments-message">No comments yet. Be the first to share your thoughts!</div>';
             return;
         }
         
@@ -55,6 +66,10 @@ async function loadComments(targetUserId) {
         
     } catch (error) {
         console.error('[COMMENTS] Load comments error:', error);
+        const commentsList = document.getElementById('comments-list');
+        if (commentsList) {
+            commentsList.innerHTML = '<div class="comments-loading"><i class="fas fa-exclamation-circle"></i> Error loading comments</div>';
+        }
     }
 }
 
@@ -64,7 +79,7 @@ async function loadComments(targetUserId) {
 function createCommentElement(comment) {
     const div = document.createElement('div');
     div.className = 'comment-item';
-    div.id = `comment-${comment.id}`;
+    div.id = `comment-${comment.id || comment.comment_id}`;
     
     const currentUserId = parseInt(localStorage.getItem('userId'));
     const isAuthor = currentUserId === comment.user_id;
@@ -73,14 +88,14 @@ function createCommentElement(comment) {
     
     let reactionsHTML = '<div class="comment-reactions">';
     VALID_REACTIONS.forEach(emoji => {
-        const count = comment.reactions[emoji] || 0;
+        const count = (comment.reactions && comment.reactions[emoji]) || 0;
         const userReacted = comment.user_reactions && comment.user_reactions.includes(emoji);
         const activeClass = userReacted ? 'active' : '';
         
         reactionsHTML += `
             <button class="reaction-btn ${activeClass}" 
                     data-emoji="${emoji}" 
-                    data-comment-id="${comment.id}"
+                    data-comment-id="${comment.id || comment.comment_id}"
                     title="Click to react">
                 ${emoji} <span class="reaction-count">${count}</span>
             </button>
@@ -90,15 +105,15 @@ function createCommentElement(comment) {
     
     let deleteBtn = '';
     if (isAuthor) {
-        deleteBtn = `<button class="delete-comment-btn" data-comment-id="${comment.id}">Delete</button>`;
+        deleteBtn = `<button class="delete-comment-btn" data-comment-id="${comment.id || comment.comment_id}"><i class="fas fa-trash"></i> Delete</button>`;
     }
     
     div.innerHTML = `
         <div class="comment-header">
-            <span class="comment-author">${comment.author_name}</span>
-            <span class="comment-time">${timeAgo}</span>
+            <span class="comment-author">${comment.username || comment.author_name || 'Anonymous'}</span>
+            <span class="comment-timestamp">${timeAgo}</span>
         </div>
-        <div class="comment-content">${escapeHtml(comment.content)}</div>
+        <div class="comment-text">${escapeHtml(comment.text || comment.content)}</div>
         ${reactionsHTML}
         <div class="comment-actions">
             ${deleteBtn}
@@ -120,58 +135,107 @@ function createCommentElement(comment) {
 /**
  * Setup comment form
  */
-function setupCommentForm(targetUserId) {
+function setupCommentForm() {
     const form = document.getElementById('comment-form');
-    const textarea = document.getElementById('comment-textarea');
-    const counter = document.getElementById('char-counter');
-    const submitBtn = document.getElementById('submit-comment-btn');
+    const textarea = document.getElementById('comment-text');
+    const counter = document.getElementById('comment-count');
+    const submitBtn = document.getElementById('submit-comment');
     
-    if (!form || !textarea) return;
+    if (!form || !textarea) {
+        console.warn('[COMMENTS] Form elements not found');
+        return;
+    }
     
     // Character counter
     textarea.addEventListener('input', () => {
         const length = textarea.value.length;
-        counter.textContent = `${length}/500`;
+        if (counter) {
+            counter.textContent = length;
+        }
         
         if (length > 500) {
             textarea.value = textarea.value.substring(0, 500);
-            counter.textContent = '500/500';
+            if (counter) counter.textContent = '500';
         }
         
-        submitBtn.disabled = length === 0;
+        if (submitBtn) {
+            submitBtn.disabled = length === 0;
+        }
     });
     
     // Form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const content = textarea.value.trim();
-        if (!content) return;
-        
-        const userId = parseInt(localStorage.getItem('userId'));
-        const jwtToken = localStorage.getItem('jwt_token');
-        
-        if (!userId || !jwtToken) {
-            alert('Please log in to comment');
-            return;
-        }
-        
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Posting...';
-        
-        try {
-            await postComment(userId, targetUserId, content, jwtToken);
-            textarea.value = '';
-            counter.textContent = '0/500';
-            submitBtn.textContent = 'Post Comment';
-            await loadComments(targetUserId);
-        } catch (error) {
-            alert('Failed to post comment: ' + error.message);
-            submitBtn.textContent = 'Post Comment';
-        } finally {
-            submitBtn.disabled = false;
-        }
-    });
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const content = textarea.value.trim();
+            if (!content) {
+                alert('Please enter a comment');
+                return;
+            }
+            
+            const userId = parseInt(localStorage.getItem('userId'));
+            const userName = localStorage.getItem('userName');
+            
+            if (!userId) {
+                alert('Please log in to comment');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        username: userName,
+                        text: content
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('[COMMENTS] Comment posted:', data);
+                
+                textarea.value = '';
+                if (counter) counter.textContent = '0';
+                submitBtn.innerHTML = originalText;
+                
+                // Show success message
+                const feedback = document.createElement('div');
+                feedback.className = 'comment-success';
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> Comment posted!';
+                textarea.parentElement.insertBefore(feedback, textarea.nextSibling);
+                
+                setTimeout(() => feedback.remove(), 3000);
+                
+                // Reload comments
+                await loadComments();
+                
+            } catch (error) {
+                console.error('[COMMENTS] Error posting comment:', error);
+                
+                const feedback = document.createElement('div');
+                feedback.className = 'comment-error';
+                feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message}`;
+                textarea.parentElement.insertBefore(feedback, textarea.nextSibling);
+                
+                setTimeout(() => feedback.remove(), 5000);
+                submitBtn.innerHTML = originalText;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
 }
 
 /**
@@ -183,9 +247,8 @@ async function handleReactionClick(e) {
     const commentId = parseInt(btn.dataset.commentId);
     
     const userId = parseInt(localStorage.getItem('userId'));
-    const jwtToken = localStorage.getItem('jwt_token');
     
-    if (!userId || !jwtToken) {
+    if (!userId) {
         alert('Please log in to react');
         return;
     }
@@ -194,19 +257,62 @@ async function handleReactionClick(e) {
         const isActive = btn.classList.contains('active');
         
         if (isActive) {
-            await removeReaction(commentId, userId, emoji, jwtToken);
+            await removeReaction(commentId, userId, emoji);
         } else {
-            await addReaction(commentId, userId, emoji, jwtToken);
+            await addReaction(commentId, userId, emoji);
         }
         
         // Reload comments to reflect changes
-        const targetUserId = parseInt(document.getElementById('target-user-id').value);
-        await loadComments(targetUserId);
+        await loadComments();
         
     } catch (error) {
         console.error('[COMMENTS] Reaction error:', error);
         alert('Failed to update reaction');
     }
+}
+
+/**
+ * Add reaction to comment
+ */
+async function addReaction(commentId, userId, emoji) {
+    const response = await fetch(`${API_BASE_URL}/comments/${commentId}/reactions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            emoji: emoji
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to add reaction: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Remove reaction from comment
+ */
+async function removeReaction(commentId, userId, emoji) {
+    const response = await fetch(`${API_BASE_URL}/comments/${commentId}/reactions`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            emoji: emoji
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to remove reaction: ${response.statusText}`);
+    }
+
+    return response.json();
 }
 
 /**
@@ -221,17 +327,28 @@ async function handleDeleteComment(e) {
     }
     
     const userId = parseInt(localStorage.getItem('userId'));
-    const jwtToken = localStorage.getItem('jwt_token');
     
-    if (!userId || !jwtToken) {
+    if (!userId) {
         alert('Please log in');
         return;
     }
     
     try {
-        await deleteComment(commentId, userId, jwtToken);
-        const targetUserId = parseInt(document.getElementById('target-user-id').value);
-        await loadComments(targetUserId);
+        const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete comment: ${response.statusText}`);
+        }
+
+        await loadComments();
     } catch (error) {
         console.error('[COMMENTS] Delete error:', error);
         alert('Failed to delete comment');
@@ -267,3 +384,15 @@ function escapeHtml(text) {
     };
     return text.replace(/[&<>"']/g, m => map[m]);
 }
+
+// Auto-initialize comments when home page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new MutationObserver(function(mutations) {
+        const homePage = document.getElementById('homePage');
+        if (homePage && homePage.classList.contains('active')) {
+            setTimeout(initializeComments, 100);
+        }
+    });
+
+    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+});
