@@ -103,9 +103,7 @@ function createHomePage() {
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="content-card" style="grid-column: 1 / -1;">
+        </div>        <div class="content-card" style="grid-column: 1 / -1;">
             <h3 class="card-title">
                 <i class="fas fa-chart-bar"></i> Dublin vs Cork
             </h3>
@@ -858,15 +856,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (homePage && homePage.classList.contains('active')) {
             // Load leaderboards after a short delay to ensure DOM is ready
             setTimeout(loadLeaderboards, 100);
-            
-            // Initialize comments after leaderboards load
-            setTimeout(() => {
-                const userId = parseInt(localStorage.getItem('userId'));
-                if (userId) {
-                    document.getElementById('target-user-id').value = userId;
-                    initializeComments(userId);
-                }
-            }, 500);
         }
     });
     
