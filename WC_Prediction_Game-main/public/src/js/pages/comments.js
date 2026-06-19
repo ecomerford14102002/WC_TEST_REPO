@@ -27,17 +27,20 @@ async function initializeComments() {
 }
 
 /**
- * Load and display comments
+ * Load and display comments - UPDATED TO USE POST
  */
 async function loadComments() {
     try {
         console.log('[COMMENTS] Loading comments');
         
         const response = await fetch(`${API_BASE_URL}/comments`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                action: 'get_comments'
+            })
         });
 
         if (!response.ok) {
@@ -193,6 +196,7 @@ function setupCommentForm() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        action: 'post_comment',
                         user_id: userId,
                         username: userName,
                         text: content
@@ -275,12 +279,14 @@ async function handleReactionClick(e) {
  * Add reaction to comment
  */
 async function addReaction(commentId, userId, emoji) {
-    const response = await fetch(`${API_BASE_URL}/comments/${commentId}/reactions`, {
+    const response = await fetch(`${API_BASE_URL}/comments`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            action: 'add_reaction',
+            comment_id: commentId,
             user_id: userId,
             emoji: emoji
         })
@@ -297,12 +303,14 @@ async function addReaction(commentId, userId, emoji) {
  * Remove reaction from comment
  */
 async function removeReaction(commentId, userId, emoji) {
-    const response = await fetch(`${API_BASE_URL}/comments/${commentId}/reactions`, {
-        method: 'DELETE',
+    const response = await fetch(`${API_BASE_URL}/comments`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            action: 'remove_reaction',
+            comment_id: commentId,
             user_id: userId,
             emoji: emoji
         })
@@ -334,12 +342,14 @@ async function handleDeleteComment(e) {
     }
     
     try {
-        const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
-            method: 'DELETE',
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                action: 'delete_comment',
+                comment_id: commentId,
                 user_id: userId
             })
         });
