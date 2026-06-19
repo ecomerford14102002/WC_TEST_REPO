@@ -2,6 +2,7 @@
 Flask Backend for World Cup Prediction Game - ADMIN UPDATED
 FINAL VERSION: Uses Lambda for ALL database queries (no direct DB connection)
 Includes admin endpoints for score entry, users, predictions, and leaderboard
+FIXED: Comments endpoint now handles both GET and POST
 """
 
 import os
@@ -1042,14 +1043,15 @@ def password_reset():
         logger.error(f"[PASSWORD_RESET] Error: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
     
-@app.route('/api/comments', methods=['POST'])
+@app.route('/api/comments', methods=['GET', 'POST'])
 def handle_comments():
     """
-    Unified comments handler - forwards all comment actions to Lambda
+    FIXED: Unified comments handler - handles both GET and POST
+    Forwards all comment actions to Lambda
     
     Supported actions:
     - post_comment: Create new comment
-    - get_comments: Retrieve comments for a user
+    - get_comments: Retrieve comments
     - delete_comment: Soft delete a comment
     - add_reaction: Add emoji reaction to comment
     - remove_reaction: Remove emoji reaction from comment
@@ -1057,7 +1059,14 @@ def handle_comments():
     try:
         logger.info("[COMMENTS] Comments request received")
         
-        data = request.get_json()
+        # Handle both GET and POST
+        if request.method == 'GET':
+            # Convert GET to POST with get_comments action
+            data = {
+                'action': 'get_comments'
+            }
+        else:
+            data = request.get_json()
         
         if not data:
             logger.error("[COMMENTS] Missing request body")
