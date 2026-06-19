@@ -117,20 +117,18 @@ function createHomePage() {
 
         <!-- Comments Section -->
         <div id="comments-container" style="grid-column: 1 / -1;">
-            <h3 class="comments-header">💬 Comments</h3>
+            <h3><i class="fas fa-comment"></i> Comments</h3>
+            <ul id="comments-list"></ul>
             
-            <!-- Hidden input to store target user ID -->
-            <input type="hidden" id="target-user-id" value="">
-            
-            <!-- Comment Form -->
-            <form id="comment-form">
-                <textarea id="comment-textarea" placeholder="Share your thoughts..." maxlength="500"></textarea>
-                <div class="char-counter"><span id="char-counter">0/500</span></div>
-                <button type="submit" id="submit-comment-btn" disabled>Post Comment</button>
-            </form>
-            
-            <!-- Comments List -->
-            <div id="comments-list"></div>
+            <div id="comment-form">
+                <textarea id="comment-text" placeholder="Share your thoughts..."></textarea>
+                <div class="comment-form-footer">
+                    <span id="comment-count">0/500</span>
+                    <button id="submit-comment" onclick="submitComment(this)">
+                        <i class="fas fa-paper-plane"></i> Post Comment
+                    </button>
+                </div>
+            </div>
         </div>
         </div>
     `;

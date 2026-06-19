@@ -27,7 +27,7 @@
   color: #86BC25;
   font-size: 1.4rem;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   margin-top: 0;
   display: flex;
   align-items: center;
@@ -38,7 +38,7 @@
 #comments-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 25px 0;
+  margin: 0 0 30px 0;
 }
 
 /* Individual Comment Item */
@@ -80,29 +80,26 @@
 
 /* Comment Form Section */
 #comment-form {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 #comment-form h4 {
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 10px 0;
+  display: none;
 }
 
 /* Textarea for Comment Input */
 #comment-text {
   width: 100%;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.1);
+  padding: 14px 16px;
+  background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
+  border-radius: 8px;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -113,31 +110,39 @@
 }
 
 #comment-text::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #comment-text:focus {
   outline: none;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.12);
   border-color: #86BC25;
-  box-shadow: 0 0 0 3px rgba(134, 188, 37, 0.2);
+  box-shadow: 0 0 0 3px rgba(134, 188, 37, 0.15);
+}
+
+/* Form Footer */
+.comment-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Character Counter */
 #comment-count {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
-  text-align: right;
+  font-weight: 500;
 }
 
-/* Submit Button */
+/* Submit Button - Matches btn-history style */
 #submit-comment {
-  background: linear-gradient(135deg, #86BC25, #9BC53D);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
@@ -146,12 +151,14 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   width: fit-content;
 }
 
 #submit-comment:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(134, 188, 37, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 #submit-comment:active:not(:disabled) {
@@ -281,12 +288,13 @@
     padding: 15px;
   }
 
-  #comment-form {
-    padding: 15px;
-  }
-
   #comment-text {
     min-height: 80px;
+  }
+
+  .comment-form-footer {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   #submit-comment {
