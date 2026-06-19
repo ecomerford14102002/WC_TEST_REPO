@@ -129,9 +129,9 @@
 /* Form Footer */
 .comment-form-footer {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
 }
 
 /* Character Counter */
@@ -146,9 +146,9 @@
 #submit-comment {
   background: linear-gradient(135deg, #86BC25, #9BC53D);
   color: white;
-  padding: 12px 24px;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
@@ -157,9 +157,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   white-space: nowrap;
-  width: fit-content;
+  width: 100%;
   box-shadow: 0 4px 15px rgba(134, 188, 37, 0.3);
 }
 
