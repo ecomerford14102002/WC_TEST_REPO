@@ -86,19 +86,25 @@
   margin-top: 25px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
 }
 
 #comment-form h4 {
-  display: none;
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
 }
 
 /* Textarea for Comment Input */
 #comment-text {
   width: 100%;
-  padding: 14px 16px;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 18px;
+  background: #3a3a3a;
+  border: 1px solid rgba(134, 188, 37, 0.3);
   border-radius: 8px;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
@@ -110,39 +116,40 @@
 }
 
 #comment-text::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 #comment-text:focus {
   outline: none;
-  background-color: rgba(255, 255, 255, 0.12);
+  background: #3a3a3a;
   border-color: #86BC25;
-  box-shadow: 0 0 0 3px rgba(134, 188, 37, 0.15);
+  box-shadow: 0 0 10px rgba(134, 188, 37, 0.2);
 }
 
 /* Form Footer */
 .comment-form-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
 /* Character Counter */
 #comment-count {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* Submit Button - Matches btn-history style */
+/* Submit Button - Matches Guess the Score button style */
 #submit-comment {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #86BC25, #9BC53D);
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
+  border: none;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
@@ -153,12 +160,12 @@
   gap: 8px;
   white-space: nowrap;
   width: fit-content;
+  box-shadow: 0 4px 15px rgba(134, 188, 37, 0.3);
 }
 
 #submit-comment:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 20px rgba(134, 188, 37, 0.4);
 }
 
 #submit-comment:active:not(:disabled) {
