@@ -803,6 +803,14 @@ async function requestPasswordReset(email) {
         }
 
         console.log('[API] Password reset request successful:', data);
+        
+        // ✅ FIX: Parse the body string if it exists (Lambda wraps response in body)
+        if (data.body && typeof data.body === 'string') {
+            const parsedBody = JSON.parse(data.body);
+            console.log('[API] Parsed response body:', parsedBody);
+            return parsedBody;
+        }
+        
         return data;
     } catch (error) {
         console.error('[API] Password reset request error:', error);
@@ -873,6 +881,14 @@ async function resetPassword(token, newPassword) {
         }
 
         console.log('[API] Password reset successful:', data);
+        
+        // ✅ FIX: Parse the body string if it exists (Lambda wraps response in body)
+        if (data.body && typeof data.body === 'string') {
+            const parsedBody = JSON.parse(data.body);
+            console.log('[API] Parsed response body:', parsedBody);
+            return parsedBody;
+        }
+        
         return data;
     } catch (error) {
         console.error('[API] Password reset error:', error);
@@ -880,67 +896,7 @@ async function resetPassword(token, newPassword) {
     }
 }
 
-/**
- * Request password reset email
- * @param {string} email - User email address
- * @returns {Promise} Response from server
- */
-async function requestPasswordReset(email) {
-    try {
-        console.log('[API] Requesting password reset for:', email);
-        
-        const response = await fetch(`${API_BASE_URL}/password-reset-request`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ email: email })
-        });
 
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to send reset email');
-        }
-        
-        console.log('[API] Password reset request successful');
-        return data;
-    } catch (error) {
-        console.error('[API] Password reset request error:', error);
-        throw error;
-    }
-}
-
-/**
- * Reset password with token
- * @param {string} token - Reset token from email
- * @param {string} newPassword - New password
- * @returns {Promise} Response from server
- */
-async function resetPassword(token, newPassword) {
-    try {
-        console.log('[API] Resetting password with token');
-        
-        const response = await fetch(`${API_BASE_URL}/password-reset`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                token: token,
-                new_password: newPassword
-            })
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to reset password');
-        }
-        
-        console.log('[API] Password reset successful');
-        return data;
-    } catch (error) {
-        console.error('[API] Password reset error:', error);
-        throw error;
-    }
-}
 
 /**
  * Post a new comment
