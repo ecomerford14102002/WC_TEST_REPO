@@ -993,7 +993,7 @@ async function handlePenaltyPredictionClick(matchId, predictedWinner) {
         awayBtn.disabled = true;
 
         // Submit via API
-        const response = await submitPenaltyPrediction(userId, matchId, predictedWinner);
+        const response = await window.submitPenaltyPrediction(userId, matchId, predictedWinner);
 
         if (response.status === 'success') {
             feedback.innerHTML = '<span style="color: #22C55E;"><i class="fas fa-check-circle"></i> Saved!</span>';
