@@ -435,26 +435,56 @@ function renderMatchCard(match) {
                 </div>
             ` : ''}
 
+                        <div class="match-actions">
+                <button 
+                    class="btn btn-primary submit-prediction-btn" 
+                    id="btn-${match.match_id}"
+                    onclick="submitMatchPrediction('${match.match_id}')"
+                    ${isLocked || isFinished ? 'disabled' : ''}
+                >
+                    <i class="fas fa-check"></i> ${existingPrediction.prediction_id ? 'Update Prediction' : 'Submit Prediction'}
+                </button>
+                <div class="submission-feedback" id="feedback-${match.match_id}"></div>
+            </div>
+
             <div class="penalty-prediction-section">
-                <div class="penalty-label">Penalty Winner (if needed)</div>
-                <div class="penalty-buttons">
+                <div class="penalty-header">
+                    <div class="penalty-title">Penalty Shootout Prediction</div>
+                    <div class="penalty-subtitle">(Optional - if match goes to penalties)</div>
+                </div>
+                
+                <div class="penalty-selection">
                     <button 
-                        class="penalty-btn" 
+                        class="penalty-team-btn" 
                         id="penalty-${match.match_id}-home"
-                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'home')"
+                        onclick="selectPenaltyWinner('${match.match_id}', 'home')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
-                        ${match.home_team}
+                        <span class="penalty-team-name">${match.home_team}</span>
+                        <span class="penalty-checkmark" id="penalty-check-${match.match_id}-home"></span>
                     </button>
+                    
                     <button 
-                        class="penalty-btn" 
+                        class="penalty-team-btn" 
                         id="penalty-${match.match_id}-away"
-                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'away')"
+                        onclick="selectPenaltyWinner('${match.match_id}', 'away')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
-                        ${match.away_team}
+                        <span class="penalty-team-name">${match.away_team}</span>
+                        <span class="penalty-checkmark" id="penalty-check-${match.match_id}-away"></span>
                     </button>
                 </div>
+
+                <button 
+                    class="btn btn-secondary penalty-submit-btn" 
+                    id="penalty-submit-${match.match_id}"
+                    onclick="submitPenaltyPredictionClick('${match.match_id}')"
+                    ${isLocked || isFinished ? 'disabled' : ''}
+                    disabled
+                >
+                    <i class="fas fa-check"></i> Submit Penalty Prediction
+                </button>
+                
                 <div class="penalty-feedback" id="penalty-feedback-${match.match_id}"></div>
             </div>
 
@@ -973,7 +1003,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
 });
+/**
+ * Track selected penalty winner
+ */
+let penaltySelections = {};
 
+/**
+ * Select penalty winner
+ */
+function selectPenaltyWinner(matchId, winner) {
+    // Store selection
+    penaltySelections[matchId] = winner;
+    
+    // Update UI
+    const homeBtn = document.getElementById(`penalty-${matchId}-home`);
+    const awayBtn = document.getElementById(`penalty-${matchId}-away`);
+    const submitBtn = document.getElementById(`penalty-submit-${matchId}`);
+    
+    // Remove selected class from both
+    homeBtn.classList.remove('selected');
+    awayBtn.classList.remove('selected');
+    
+    // Add selected class to clicked button
+    if (winner === 'home') {
+        homeBtn.classList.add('selected');
+    } else {
+        awayBtn.classList.add('selected');
+    }
+    
+    // Enable submit button
+    submitBtn.disabled = false;
+    
+    console.log(`[PENALTIES] Selected ${winner} for match ${matchId}`);
+}
+
+/**
+ * Submit penalty prediction
+ */
+async function submitPenaltyPredictionClick(matchId) {
+    const predictedWinner = penaltySelections[matchId];
+    
+    if (!predictedWinner) {
+        alert('Please select a team first');
+        return;
+    }
+    
+    await handlePenaltyPredictionClick(matchId, predictedWinner);
+}
 /**
  * Submit penalty prediction
  */
