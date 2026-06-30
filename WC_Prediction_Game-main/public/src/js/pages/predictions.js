@@ -1012,6 +1012,8 @@ let penaltySelections = {};
  * Select penalty winner
  */
 function selectPenaltyWinner(matchId, winner) {
+    event.preventDefault();
+    
     // Store selection
     penaltySelections[matchId] = winner;
     
