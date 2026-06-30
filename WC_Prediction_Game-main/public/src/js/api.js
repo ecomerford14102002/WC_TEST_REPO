@@ -359,7 +359,7 @@ async function submitPenaltyPrediction(userId, matchId, predictedWinner) {
             throw new Error('User not authenticated');
         }
 
-        const response = await fetch(`${API_BASE_URL}/submit-penalty-prediction`, {
+        const response = await fetch(`${API_BASE_URL}/world-cup-submit-penalty-prediction`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
