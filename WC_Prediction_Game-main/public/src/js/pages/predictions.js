@@ -426,7 +426,7 @@ function renderMatchCard(match) {
                 </div>
             </div>
 
-            ${isFinished ? `
+                        ${isFinished ? `
                 <div class="actual-score-section">
                     <div class="actual-score-label">Final Score</div>
                     <div class="actual-score">
@@ -434,6 +434,29 @@ function renderMatchCard(match) {
                     </div>
                 </div>
             ` : ''}
+
+            <div class="penalty-prediction-section">
+                <div class="penalty-label">Penalty Winner (if needed)</div>
+                <div class="penalty-buttons">
+                    <button 
+                        class="penalty-btn" 
+                        id="penalty-${match.match_id}-home"
+                        onclick="submitPenaltyPrediction('${match.match_id}', 'home')"
+                        ${isLocked || isFinished ? 'disabled' : ''}
+                    >
+                        ${match.home_team}
+                    </button>
+                    <button 
+                        class="penalty-btn" 
+                        id="penalty-${match.match_id}-away"
+                        onclick="submitPenaltyPrediction('${match.match_id}', 'away')"
+                        ${isLocked || isFinished ? 'disabled' : ''}
+                    >
+                        ${match.away_team}
+                    </button>
+                </div>
+                <div class="penalty-feedback" id="penalty-feedback-${match.match_id}"></div>
+            </div>
 
             <div class="match-actions">
                 <button 
@@ -949,4 +972,47 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+/**
+ * Submit penalty prediction
+ */
+async function submitPenaltyPrediction(matchId, predictedWinner) {
+    try {
+        const userId = parseInt(localStorage.getItem('userId'));
+        if (!userId) {
+            alert('User not authenticated');
+            return;
+        }
+
+        const feedback = document.getElementById(`penalty-feedback-${matchId}`);
+        const homeBtn = document.getElementById(`penalty-${matchId}-home`);
+        const awayBtn = document.getElementById(`penalty-${matchId}-away`);
+
+        // Show loading
+        feedback.innerHTML = '<span style="color: #86BC25;">Submitting...</span>';
+        homeBtn.disabled = true;
+        awayBtn.disabled = true;
+
+        // Submit via API
+        const response = await submitPenaltyPrediction(userId, matchId, predictedWinner);
+
+        if (response.status === 'success') {
+            feedback.innerHTML = '<span style="color: #22C55E;"><i class="fas fa-check-circle"></i> Saved!</span>';
+            homeBtn.disabled = true;
+            awayBtn.disabled = true;
+            setTimeout(() => { feedback.innerHTML = ''; }, 3000);
+        } else {
+            throw new Error(response.message || 'Failed to submit');
+        }
+    } catch (error) {
+        console.error('Penalty prediction error:', error);
+        const feedback = document.getElementById(`penalty-feedback-${matchId}`);
+        feedback.innerHTML = `<span style="color: #EF4444;"><i class="fas fa-exclamation-circle"></i> ${error.message}</span>`;
+        
+        // Re-enable buttons
+        const homeBtn = document.getElementById(`penalty-${matchId}-home`);
+        const awayBtn = document.getElementById(`penalty-${matchId}-away`);
+        if (homeBtn) homeBtn.disabled = false;
+        if (awayBtn) awayBtn.disabled = false;
+    }
+}
 });
