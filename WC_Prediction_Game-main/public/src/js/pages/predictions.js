@@ -441,7 +441,7 @@ function renderMatchCard(match) {
                     <button 
                         class="penalty-btn" 
                         id="penalty-${match.match_id}-home"
-                        onclick="submitPenaltyPrediction('${match.match_id}', 'home')"
+                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'home')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
                         ${match.home_team}
@@ -449,7 +449,7 @@ function renderMatchCard(match) {
                     <button 
                         class="penalty-btn" 
                         id="penalty-${match.match_id}-away"
-                        onclick="submitPenaltyPrediction('${match.match_id}', 'away')"
+                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'away')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
                         ${match.away_team}
@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Submit penalty prediction
  */
-async function submitPenaltyPrediction(matchId, predictedWinner) {
+async function handlePenaltyPredictionClick(matchId, predictedWinner) {
     try {
         const userId = parseInt(localStorage.getItem('userId'));
         if (!userId) {
