@@ -339,6 +339,53 @@ async function submitPrediction(userId, matchId, predictedHomeScore, predictedAw
 }
 
 /**
+ * Submit a penalty prediction for a match
+ * @param {number} userId - User ID
+ * @param {string} matchId - Match ID
+ * @param {string} predictedWinner - Predicted penalty winner ('home' or 'away')
+ * @returns {Promise} Response from server
+ */
+async function submitPenaltyPrediction(userId, matchId, predictedWinner) {
+    try {
+        console.log('Submitting penalty prediction:', {
+            userId,
+            matchId,
+            predictedWinner
+        });
+
+        const jwtToken = getJWTToken();
+        
+        if (!jwtToken) {
+            throw new Error('User not authenticated');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/submit-penalty-prediction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                jwt_token: jwtToken,
+                match_id: matchId,
+                predicted_winner: predictedWinner
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to submit penalty prediction');
+        }
+
+        console.log('Penalty prediction submitted successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('Submit penalty prediction error:', error);
+        throw error;
+    }
+}
+/**
  * Get user leaderboard
  * @param {number} limit - Number of users to return (default 10, max 100)
  * @returns {Promise} Leaderboard data
