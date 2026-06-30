@@ -972,6 +972,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+});
+
 /**
  * Submit penalty prediction
  */
@@ -1015,4 +1017,3 @@ async function handlePenaltyPredictionClick(matchId, predictedWinner) {
         if (awayBtn) awayBtn.disabled = false;
     }
 }
-});
