@@ -455,6 +455,7 @@ function renderMatchCard(match) {
                 
                 <div class="penalty-selection">
                     <button 
+                        type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-home"
                         onclick="selectPenaltyWinner('${match.match_id}', 'home')"
@@ -465,6 +466,7 @@ function renderMatchCard(match) {
                     </button>
                     
                     <button 
+                        type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-away"
                         onclick="selectPenaltyWinner('${match.match_id}', 'away')"
@@ -475,7 +477,8 @@ function renderMatchCard(match) {
                     </button>
                 </div>
 
-                <button 
+                <button
+                    type="button"
                     class="btn btn-secondary penalty-submit-btn" 
                     id="penalty-submit-${match.match_id}"
                     onclick="submitPenaltyPredictionClick('${match.match_id}')"
@@ -488,18 +491,7 @@ function renderMatchCard(match) {
                 <div class="penalty-feedback" id="penalty-feedback-${match.match_id}"></div>
             </div>
 
-            <div class="match-actions">
-                <button 
-                    class="btn btn-primary submit-prediction-btn" 
-                    id="btn-${match.match_id}"
-                    onclick="submitMatchPrediction('${match.match_id}')"
-                    ${isLocked || isFinished ? 'disabled' : ''}
-                >
-                    <i class="fas fa-check"></i> ${existingPrediction.prediction_id ? 'Update Prediction' : 'Submit Prediction'}
-                </button>
-                <div class="submission-feedback" id="feedback-${match.match_id}"></div>
-            </div>
-        </div>
+            
     `;
 }
 
