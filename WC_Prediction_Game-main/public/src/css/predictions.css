@@ -660,6 +660,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .penalty-team-btn:hover:not(:disabled) {
