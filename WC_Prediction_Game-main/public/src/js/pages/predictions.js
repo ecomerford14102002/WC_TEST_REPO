@@ -999,9 +999,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const predictionsPage = document.getElementById('scoreGuesserPage');
     
     if (predictionsPage) {
+        // Load matches immediately if page is already active
+        if (predictionsPage.classList.contains('active')) {
+            setTimeout(loadMatches, 100);
+        }
+        
         const observer = new MutationObserver(function(mutations) {
             if (predictionsPage.classList.contains('active')) {
-                // Load matches after a short delay to ensure DOM is ready
                 setTimeout(loadMatches, 100);
             }
         });
