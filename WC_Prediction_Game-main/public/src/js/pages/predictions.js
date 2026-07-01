@@ -996,15 +996,22 @@ function closeHistory() {
  * Auto-load matches when predictions page is shown
  */
 document.addEventListener('DOMContentLoaded', function() {
-    const observer = new MutationObserver(function(mutations) {
-        const predictionsPage = document.getElementById('scoreGuesserPage');
-        if (predictionsPage && predictionsPage.classList.contains('active')) {
-            // Load matches after a short delay to ensure DOM is ready
-            setTimeout(loadMatches, 100);
-        }
-    });
+    const predictionsPage = document.getElementById('scoreGuesserPage');
     
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    if (predictionsPage) {
+        const observer = new MutationObserver(function(mutations) {
+            if (predictionsPage.classList.contains('active')) {
+                // Load matches after a short delay to ensure DOM is ready
+                setTimeout(loadMatches, 100);
+            }
+        });
+        
+        // Only watch the predictions page element itself, not the entire subtree
+        observer.observe(predictionsPage, { 
+            attributes: true, 
+            attributeFilter: ['class']
+        });
+    }
 });
 /**
  * Track selected penalty winner
