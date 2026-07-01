@@ -608,7 +608,6 @@
     align-items: center;
     justify-content: center;
     min-height: 400px;
-<<<<<<< HEAD
 }
 
 .penalty-prediction-section {
@@ -710,6 +709,4 @@
     font-size: 0.85rem;
     margin-top: 12px;
     text-align: center;
-=======
->>>>>>> parent of 314acfe (Update predictions.css)
 }
