@@ -1025,6 +1025,16 @@ let penaltySelections = {};
 function selectPenaltyWinner(matchId, winner) {
     if (event) event.preventDefault();
     
+    // Check if match is locked
+    const match = matchesData.find(m => m.match_id === matchId);
+    if (!match) return;
+    
+    const matchState = getMatchState(match);
+    if (matchState.isLocked || matchState.isFinished) {
+        alert('Cannot select penalty winner - match is locked');
+        return;
+    }
+    
     // Store selection
     penaltySelections[matchId] = winner;
     
