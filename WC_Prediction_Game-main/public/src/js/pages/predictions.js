@@ -999,8 +999,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const observer = new MutationObserver(function(mutations) {
         const predictionsPage = document.getElementById('scoreGuesserPage');
         if (predictionsPage && predictionsPage.classList.contains('active')) {
-            // Load matches after a short delay to ensure DOM is ready
-            setTimeout(loadMatches, 100);
+            // Check if the mutation is just a penalty team selection
+            const isPenaltySelection = mutations.some(mutation => {
+                return mutation.target.classList && 
+                       mutation.target.classList.contains('penalty-team-btn');
+            });
+            
+            // Only load matches if it's NOT a penalty team selection
+            if (!isPenaltySelection) {
+                setTimeout(loadMatches, 100);
+            }
         }
     });
     
