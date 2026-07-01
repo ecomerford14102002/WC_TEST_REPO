@@ -897,7 +897,35 @@ async function openHistory() {
                                  pred.predicted_away_score === pred.away_score;
                 const pointsClass = pred.points_earned > 0 ? 'points-positive' : 'points-zero';
                 
-                historyHTML += `
+                // Check if penalty prediction was made
+const penaltyPredictionMade = pred.predicted_penalty_winner !== null;
+const penaltyPointsClass = pred.penalty_points_earned > 0 ? 'points-positive' : 'points-zero';
+
+// Build penalty section HTML
+let penaltySectionHTML = '';
+if (penaltyPredictionMade) {
+    penaltySectionHTML = `
+        <div class="history-penalty-section">
+            <div class="penalty-label">Penalty Prediction</div>
+            <div class="penalty-scores">
+                <div class="penalty-column">
+                    <div class="penalty-sublabel">Your Pick</div>
+                    <div class="penalty-value">${pred.predicted_penalty_winner}</div>
+                </div>
+                <div class="penalty-column">
+                    <div class="penalty-sublabel">Actual Winner</div>
+                    <div class="penalty-value">${pred.actual_penalty_winner || 'N/A'}</div>
+                </div>
+                <div class="penalty-column">
+                    <div class="penalty-sublabel">Points</div>
+                    <div class="penalty-value ${penaltyPointsClass}">${pred.penalty_points_earned || 0}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+historyHTML += `
                     <div class="history-item ${isCorrect ? 'correct-prediction' : ''}">
                         <div class="history-match">
                             <div class="history-teams">
@@ -921,6 +949,7 @@ async function openHistory() {
                                 <div class="score-value ${pointsClass}">${pred.points_earned}</div>
                             </div>
                         </div>
+                        ${penaltySectionHTML}
                     </div>
                 `;
             });
