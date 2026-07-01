@@ -491,17 +491,7 @@ function renderMatchCard(match) {
                 <div class="penalty-feedback" id="penalty-feedback-${match.match_id}"></div>
             </div>
 
-            <div class="match-actions">
-                <button 
-                    class="btn btn-primary submit-prediction-btn" 
-                    id="btn-${match.match_id}"
-                    onclick="submitMatchPrediction('${match.match_id}')"
-                    ${isLocked || isFinished ? 'disabled' : ''}
-                >
-                    <i class="fas fa-check"></i> ${existingPrediction.prediction_id ? 'Update Prediction' : 'Submit Prediction'}
-                </button>
-                <div class="submission-feedback" id="feedback-${match.match_id}"></div>
-            </div>
+            
         </div>
     `;
 }
