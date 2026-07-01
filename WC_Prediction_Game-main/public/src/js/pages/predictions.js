@@ -996,26 +996,15 @@ function closeHistory() {
  * Auto-load matches when predictions page is shown
  */
 document.addEventListener('DOMContentLoaded', function() {
-    const predictionsPage = document.getElementById('scoreGuesserPage');
-    
-    if (predictionsPage) {
-        // Load matches immediately if page is already active
-        if (predictionsPage.classList.contains('active')) {
+    const observer = new MutationObserver(function(mutations) {
+        const predictionsPage = document.getElementById('scoreGuesserPage');
+        if (predictionsPage && predictionsPage.classList.contains('active')) {
+            // Load matches after a short delay to ensure DOM is ready
             setTimeout(loadMatches, 100);
         }
-        
-        const observer = new MutationObserver(function(mutations) {
-            if (predictionsPage.classList.contains('active')) {
-                setTimeout(loadMatches, 100);
-            }
-        });
-        
-        // Only watch the predictions page element itself, not the entire subtree
-        observer.observe(predictionsPage, { 
-            attributes: true, 
-            attributeFilter: ['class']
-        });
-    }
+    });
+    
+    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
 });
 /**
  * Track selected penalty winner
@@ -1026,6 +1015,8 @@ let penaltySelections = {};
  * Select penalty winner
  */
 function selectPenaltyWinner(matchId, winner) {
+    if (event) event.preventDefault();
+    
     // Store selection
     penaltySelections[matchId] = winner;
     
