@@ -455,6 +455,7 @@ function renderMatchCard(match) {
                 
                 <div class="penalty-selection">
                     <button 
+                        type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-home"
                         onclick="selectPenaltyWinner('${match.match_id}', 'home')"
@@ -465,6 +466,7 @@ function renderMatchCard(match) {
                     </button>
                     
                     <button 
+                        type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-away"
                         onclick="selectPenaltyWinner('${match.match_id}', 'away')"
@@ -476,6 +478,7 @@ function renderMatchCard(match) {
                 </div>
 
                 <button
+                    type="button"
                     class="btn btn-secondary penalty-submit-btn" 
                     id="penalty-submit-${match.match_id}"
                     onclick="submitPenaltyPredictionClick('${match.match_id}')"
