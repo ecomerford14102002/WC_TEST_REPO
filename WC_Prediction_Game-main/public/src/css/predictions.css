@@ -753,3 +753,72 @@
     margin-top: 12px;
     text-align: center;
 }
+
+/* ============================================================================
+   PENALTY PREDICTION SECTION IN HISTORY MODAL
+   ============================================================================ */
+
+.history-penalty-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(134, 188, 37, 0.2);
+}
+
+.penalty-label {
+    color: #86BC25;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.penalty-scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.penalty-column {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(134, 188, 37, 0.1);
+    transition: all 0.3s ease;
+}
+
+.penalty-column:hover {
+    border-color: rgba(134, 188, 37, 0.3);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.penalty-sublabel {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.penalty-value {
+    color: #86BC25;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+.penalty-no-prediction {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(134, 188, 37, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
