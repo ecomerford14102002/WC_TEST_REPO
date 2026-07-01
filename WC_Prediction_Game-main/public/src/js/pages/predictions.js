@@ -454,7 +454,7 @@ function renderMatchCard(match) {
                 </div>
                 
                 <div class="penalty-selection">
-                    <button 
+                    <div 
                         type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-home"
@@ -463,9 +463,9 @@ function renderMatchCard(match) {
                     >
                         <span class="penalty-team-name">${match.home_team}</span>
                         <span class="penalty-checkmark" id="penalty-check-${match.match_id}-home"></span>
-                    </button>
+                    </div>
                     
-                    <button 
+                    <div 
                         type="button"
                         class="penalty-team-btn" 
                         id="penalty-${match.match_id}-away"
@@ -474,7 +474,7 @@ function renderMatchCard(match) {
                     >
                         <span class="penalty-team-name">${match.away_team}</span>
                         <span class="penalty-checkmark" id="penalty-check-${match.match_id}-away"></span>
-                    </button>
+                    </div>
                 </div>
 
                 <button 
@@ -1015,8 +1015,6 @@ let penaltySelections = {};
  * Select penalty winner
  */
 function selectPenaltyWinner(matchId, winner) {
-    if (event) event.preventDefault();
-    
     // Store selection
     penaltySelections[matchId] = winner;
     
