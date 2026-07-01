@@ -435,27 +435,45 @@ function renderMatchCard(match) {
                 </div>
             ` : ''}
 
+                        <div class="match-actions">
+                <button 
+                    class="btn btn-primary submit-prediction-btn" 
+                    id="btn-${match.match_id}"
+                    onclick="submitMatchPrediction('${match.match_id}')"
+                    ${isLocked || isFinished ? 'disabled' : ''}
+                >
+                    <i class="fas fa-check"></i> ${existingPrediction.prediction_id ? 'Update Prediction' : 'Submit Prediction'}
+                </button>
+                <div class="submission-feedback" id="feedback-${match.match_id}"></div>
+            </div>
+
             <div class="penalty-prediction-section">
-                <div class="penalty-label">Penalty Winner (if needed)</div>
-                <div class="penalty-buttons">
+                <div class="penalty-header">
+                    <div class="penalty-title">Penalty Shootout Prediction</div>
+                    <div class="penalty-subtitle">(Optional - if match goes to penalties)</div>
+                </div>
+                
+                <div class="penalty-selection">
                     <button 
-                        class="penalty-btn" 
+                        class="penalty-team-btn" 
                         id="penalty-${match.match_id}-home"
-                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'home')"
+                        onclick="selectPenaltyWinner('${match.match_id}', 'home')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
-                        ${match.home_team}
+                        <span class="penalty-team-name">${match.home_team}</span>
+                        <span class="penalty-checkmark" id="penalty-check-${match.match_id}-home"></span>
                     </button>
+                    
                     <button 
-                        class="penalty-btn" 
+                        class="penalty-team-btn" 
                         id="penalty-${match.match_id}-away"
-                        onclick="handlePenaltyPredictionClick('${match.match_id}', 'away')"
+                        onclick="selectPenaltyWinner('${match.match_id}', 'away')"
                         ${isLocked || isFinished ? 'disabled' : ''}
                     >
-                        ${match.away_team}
+                        <span class="penalty-team-name">${match.away_team}</span>
+                        <span class="penalty-checkmark" id="penalty-check-${match.match_id}-away"></span>
                     </button>
                 </div>
-<<<<<<< HEAD
 
                 <button
                     class="btn btn-secondary penalty-submit-btn" 
@@ -467,8 +485,6 @@ function renderMatchCard(match) {
                     <i class="fas fa-check"></i> Submit Penalty Prediction
                 </button>
                 
-=======
->>>>>>> parent of 171d8ba (Update predictions.js)
                 <div class="penalty-feedback" id="penalty-feedback-${match.match_id}"></div>
             </div>
 
@@ -976,9 +992,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
 });
+/**
+ * Track selected penalty winner
+ */
+let penaltySelections = {};
 
 /**
-<<<<<<< HEAD
  * Select penalty winner
  */
 function selectPenaltyWinner(matchId, winner) {
@@ -1023,8 +1042,6 @@ async function submitPenaltyPredictionClick(matchId) {
     await handlePenaltyPredictionClick(matchId, predictedWinner);
 }
 /**
-=======
->>>>>>> parent of 171d8ba (Update predictions.js)
  * Submit penalty prediction
  */
 async function handlePenaltyPredictionClick(matchId, predictedWinner) {
